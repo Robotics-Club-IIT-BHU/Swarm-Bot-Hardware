@@ -53,8 +53,6 @@ Note:
 
 class Motor{
     private:
-        int motor_encA;
-        int motor_encB;
         int motor_p;
         int motor_n;
         int motor_e;
@@ -62,11 +60,13 @@ class Motor{
         int inter_val;
 
     public:
+        int motor_encA;
+        int motor_encB;
         PiD* pid_obj;
         Motor(int, int, int, int, int, double, double, double);
         double control(double);
         double read();
-        void updateEncoder();
+        //void updateEncoder();
 };
 Motor::Motor(int p, int n, int e, int a, int b, double Kp, double Kd, double Ki){
     motor_encA = a;
@@ -86,22 +86,7 @@ Motor::Motor(int p, int n, int e, int a, int b, double Kp, double Kd, double Ki)
 #define __PI_WIRING_SET__
     wiringPiSetup();
 #endif
-    wiringPiISR(motor_encA, INT_EDGE_BOTH, &Motor::updateEncoder, this);
-    wiringPiISR(motor_encB, INT_EDGE_BOTH, &Motor::updateEncoder, this);
-}
-void Motor::updateEncoder(){
-    int MSB = digitalRead(motor_encA);
-    int LSB = digitalRead(motor_encB);
-
-    int encoded = (MSB<<1)|LSB;
-    int sum = (inter_val<<2)|encoded;
     
-    if(sum == 0b1101 || sum == 0b0100 || sum == 0b0010 || sum == 0b1011)
-        pos--;
-    if(sum == 0b1110 || sum == 0b0111 || sum == 0b0001 || sum == 0b1000)
-        pos++;
-
-    inter_val = encoded;
 }
 double Motor::read(){
     return 2*PI*(double)(pos/(long)ENC_PULSE_PER_REV);
