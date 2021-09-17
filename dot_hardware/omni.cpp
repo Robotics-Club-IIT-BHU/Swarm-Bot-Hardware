@@ -56,19 +56,19 @@ void updateEncoderR(){
 
 void* controlL(void *vargp)
 {
-    cout<<"lcontrol\n";
+    std::cout<<"lcontrol\n";
     l->control();
     //sleep(0.001);
 }
 void* controlR(void *vargp)
 {
-    cout<<"rcontrol\n";
+    std::cout<<"rcontrol\n";
     r->control();
     //sleep(0.001);
 }
 void* controlB(void *vargp)
 {
-    cout<<"bcontrol\n";
+    std::cout<<"bcontrol\n";
     b->control();
     //sleep(0.001);
 }
@@ -114,7 +114,7 @@ int main(){
     div = new OmniDriver();
     while(true){
         double read[3];
-        div.readings(read);
+        div->readings(read);
         std::cout<<"L: "<<read[L_IND]<<" R: "<<read[R_IND]<<" B: "<<read[B_IND]<<"\n";
         delay(10);
         // softPwmWrite(pi_27, 100);
