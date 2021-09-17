@@ -1,7 +1,9 @@
 #include "motor.h"
 #include <wiringPi.h>
 
-Motor* l,r,b;
+Motor* l;
+Motor* r;
+Motor* b;
 
 void updateEncoderL(){    
     int MSB = digitalRead(l->motor_encA);
