@@ -1,5 +1,5 @@
 #include "motor.h"
-#include <wiringPi>
+#include <wiringPi.h>
 
 Motor* a;
 
