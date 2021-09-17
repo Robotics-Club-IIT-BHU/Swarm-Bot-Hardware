@@ -95,7 +95,7 @@ double Motor::read(){
 int Motor::control(){
     double val = pid_obj->compute(this->pos);
     //std::cout<<val<<"\n";  
-    if(abs(val)<0.1)return 0;
+    if(abs(val)<5)return 0;
     if(val<0){
         digitalWrite(motor_p, HIGH);
         digitalWrite(motor_n, LOW);
