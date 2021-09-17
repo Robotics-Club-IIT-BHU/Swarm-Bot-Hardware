@@ -91,7 +91,7 @@ class OmniDriver{
 #endif
 
             l = new Motor(pi_22, pi_23, pi_27, pi_17, pi_4, 10.0, 100.0, 0.0);
-            r = new Motor(pi_10, pi_9, pi_25, pi_20, pi_21, 10.0, 100.0, 0.0);
+            r = new Motor(pi_10, pi_25, pi_9, pi_20, pi_21, 10.0, 100.0, 0.0);
             b = new Motor(pi_6, pi_5, pi_12, pi_11, pi_26, 10.0, 100.0, 0.0);
             
             wiringPiISR(l->motor_encA, INT_EDGE_BOTH, updateEncoderL);
