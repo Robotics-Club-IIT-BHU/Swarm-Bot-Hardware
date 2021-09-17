@@ -69,7 +69,7 @@ class Motor{
 
         PiD* pid_obj;
         Motor(int, int, int, int, int, double, double, double);
-        void *control(void);
+        int control(void);
         double read();
         void set(long double);
         //void updateEncoder();
@@ -87,16 +87,15 @@ Motor::Motor(int p, int n, int e, int a, int b, double Kp, double Kd, double Ki)
     softPwmCreate(motor_e, 0, 100);
 
     pid_obj = new PiD(Kp,Kd,Ki);
-    pthread_create(&thread_id, NULL, &Motor::control, this);
 }
 double Motor::read(){
     return 2*PI*(double)((long double)pos/((long double)ENC_PULSE_PER_REV));
 }
 
-void* Motor::control(){
+int Motor::control(){
     double val = pid_obj->compute(this->pos);
     
-    if(abs(val)<0.1)return;
+    if(abs(val)<0.1)return 0;
     if(val<0){
         digitalWrite(motor_p, LOW);
         digitalWrite(motor_n, HIGH);
@@ -106,6 +105,7 @@ void* Motor::control(){
         digitalWrite(motor_n, LOW);
         softPwmWrite(motor_e, min(val, m_effort));
     }
+    return 1;
 }
 
 void Motor::set(long double target){

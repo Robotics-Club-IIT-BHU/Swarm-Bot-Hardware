@@ -53,7 +53,18 @@ void updateEncoderR(){
     r->inter_val = encoded;
 }
 
-
+void* controlL()
+{
+    l->control();
+}
+void* controlR()
+{
+    r->control();
+}
+void* controlB()
+{
+    b->control();
+}
 class OmniDriver{
     private:
 
@@ -77,6 +88,10 @@ class OmniDriver{
 
             wiringPiISR(b->motor_encA, INT_EDGE_BOTH, updateEncoderB);
             wiringPiISR(b->motor_encB, INT_EDGE_BOTH, updateEncoderB);
+
+            pthread_create(&(l->thread_id), NULL, controlL, NULL);
+            pthread_create(&(r->thread_id), NULL, controlR, NULL);
+            pthread_create(&(b->thread_id), NULL, controlB, NULL);
         }
         
         void readings(double* _re){
