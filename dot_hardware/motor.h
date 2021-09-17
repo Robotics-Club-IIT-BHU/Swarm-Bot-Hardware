@@ -33,7 +33,7 @@
 #define pi_27 2
 
 #define PI 3.14159
-
+#define min(a,b) a>b?b:a
 #define ENC_PULSE_PER_REV 2800
 
 // This is for 150rpm motor with 100 gear ratio
