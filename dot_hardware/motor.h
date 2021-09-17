@@ -1,6 +1,6 @@
 #include "pid.h"
 #include <wiringPi.h>
-#include <softPWM.h>
+#include <softPwm.h>
 
 #define pi_0 30
 #define pi_1 31
