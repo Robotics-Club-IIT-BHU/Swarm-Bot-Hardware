@@ -63,7 +63,7 @@ class Motor{
 
     public:
         PiD* pid_obj;
-        Motor();
+        Motor(int, int, int, int, int, double, double, double);
         double control(double);
         double read();
         void updateEncoder();

@@ -1,7 +1,7 @@
 #include "motor.h"
 
 int main(){
-    Motor a(pi_22, pi_23, pi_27, pi_17, pi_18, 10f, 100f, 0f);
+    Motor a(pi_22, pi_23, pi_27, pi_17, pi_18, 10.0, 100.0, 0.0);
 
     // while(true){
     //     softPwmWrite(pi_27, 100);
