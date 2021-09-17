@@ -55,7 +55,7 @@ double PiD::compute(long double current){
         prev_error = error; 
     } else {
         error = target-current;
-        if(error<0.1) error_i+=error;
+        if(abs(error)<0.01) error_i+=error;
         else error_i=0;
         
         pid_feed = Kp*error + Kd*((error-prev_error)/dt_) + Ki*error_i;
