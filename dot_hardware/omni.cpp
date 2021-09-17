@@ -58,19 +58,19 @@ void* controlL(void *vargp)
 {
     std::cout<<"lcontrol\n";
     l->control();
-    //sleep(0.001);
+    usleep(10);
 }
 void* controlR(void *vargp)
 {
     std::cout<<"rcontrol\n";
     r->control();
-    //sleep(0.001);
+    usleep(10);
 }
 void* controlB(void *vargp)
 {
     std::cout<<"bcontrol\n";
     b->control();
-    //sleep(0.001);
+    usleep(10);
 }
 class OmniDriver{
     private:
@@ -95,7 +95,7 @@ class OmniDriver{
 
             wiringPiISR(b->motor_encA, INT_EDGE_BOTH, updateEncoderB);
             wiringPiISR(b->motor_encB, INT_EDGE_BOTH, updateEncoderB);
-            std::cout<<"here";
+            //std::cout<<"here";
             pthread_create(&(l->thread_id), NULL, controlL, NULL);
             pthread_create(&(r->thread_id), NULL, controlR, NULL);
             pthread_create(&(b->thread_id), NULL, controlB, NULL);
