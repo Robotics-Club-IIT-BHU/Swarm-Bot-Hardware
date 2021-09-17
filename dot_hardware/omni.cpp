@@ -56,18 +56,21 @@ void updateEncoderR(){
 
 void* controlL(void *vargp)
 {
+    cout<<"lcontrol\n";
     l->control();
-    sleep(0.001);
+    //sleep(0.001);
 }
 void* controlR(void *vargp)
 {
+    cout<<"rcontrol\n";
     r->control();
-    sleep(0.001);
+    //sleep(0.001);
 }
 void* controlB(void *vargp)
 {
+    cout<<"bcontrol\n";
     b->control();
-    sleep(0.001);
+    //sleep(0.001);
 }
 class OmniDriver{
     private:
@@ -107,7 +110,8 @@ class OmniDriver{
 
 int main(){
 
-    OmniDriver div;
+    OmniDriver* div;
+    div = new OmniDriver();
     while(true){
         double read[3];
         div.readings(read);
