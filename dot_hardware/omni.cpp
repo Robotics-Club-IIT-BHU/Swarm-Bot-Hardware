@@ -56,21 +56,28 @@ void updateEncoderR(){
 
 void* controlL(void *vargp)
 {
-    std::cout<<"lcontrol\n";
-    l->control();
-    usleep(10);
+    //std::cout<<"lcontrol\n";
+    while(true){
+        l->control();
+        usleep(10);
+    }
 }
 void* controlR(void *vargp)
 {
-    std::cout<<"rcontrol\n";
-    r->control();
-    usleep(10);
+    //std::cout<<"rcontrol\n";
+    while(true){
+        r->control();
+        usleep(10);
+    }
+    
 }
 void* controlB(void *vargp)
 {
-    std::cout<<"bcontrol\n";
-    b->control();
-    usleep(10);
+    //std::cout<<"bcontrol\n";
+    while(true){
+        b->control();
+        usleep(10);
+    }
 }
 class OmniDriver{
     private:
