@@ -4,14 +4,60 @@
 #define L_IND 0
 #define R_IND 1
 #define B_IND 2
+Motor* l;
+Motor* r;
+Motor* b;
+
+void updateEncoderL(){    
+    int MSB = digitalRead(l->motor_encA);
+    int LSB = digitalRead(l->motor_encB);
+
+    int encoded = (MSB<<1)|LSB;
+    int sum = (l->inter_val<<2)|encoded;
+    
+    if(sum == 0b1101 || sum == 0b0100 || sum == 0b0010 || sum == 0b1011)
+        l->pos--;
+    if(sum == 0b1110 || sum == 0b0111 || sum == 0b0001 || sum == 0b1000)
+        l->pos++;
+
+    l->inter_val = encoded;
+}
+
+void updateEncoderB(){    
+    int MSB = digitalRead(b->motor_encA);
+    int LSB = digitalRead(b->motor_encB);
+
+    int encoded = (MSB<<1)|LSB;
+    int sum = (b->inter_val<<2)|encoded;
+    
+    if(sum == 0b1101 || sum == 0b0100 || sum == 0b0010 || sum == 0b1011)
+        b->pos--;
+    if(sum == 0b1110 || sum == 0b0111 || sum == 0b0001 || sum == 0b1000)
+        b->pos++;
+
+    b->inter_val = encoded;
+}
+
+void updateEncoderR(){    
+    int MSB = digitalRead(r->motor_encA);
+    int LSB = digitalRead(r->motor_encB);
+
+    int encoded = (MSB<<1)|LSB;
+    int sum = (r->inter_val<<2)|encoded;
+    
+    if(sum == 0b1101 || sum == 0b0100 || sum == 0b0010 || sum == 0b1011)
+        r->pos--;
+    if(sum == 0b1110 || sum == 0b0111 || sum == 0b0001 || sum == 0b1000)
+        r->pos++;
+
+    r->inter_val = encoded;
+}
+
 
 class OmniDriver{
     private:
 
     public:
-        Motor* l;
-        Motor* r;
-        Motor* b;
         OmniDriver(){
 
 #ifndef __PI_WIRING_SET__
@@ -32,57 +78,13 @@ class OmniDriver{
             wiringPiISR(b->motor_encA, INT_EDGE_BOTH, updateEncoderB);
             wiringPiISR(b->motor_encB, INT_EDGE_BOTH, updateEncoderB);
         }
-        void updateEncoderL(){    
-            int MSB = digitalRead(l->motor_encA);
-            int LSB = digitalRead(l->motor_encB);
-
-            int encoded = (MSB<<1)|LSB;
-            int sum = (l->inter_val<<2)|encoded;
-            
-            if(sum == 0b1101 || sum == 0b0100 || sum == 0b0010 || sum == 0b1011)
-                l->pos--;
-            if(sum == 0b1110 || sum == 0b0111 || sum == 0b0001 || sum == 0b1000)
-                l->pos++;
-
-            l->inter_val = encoded;
-        }
-
-        void updateEncoderB(){    
-            int MSB = digitalRead(b->motor_encA);
-            int LSB = digitalRead(b->motor_encB);
-
-            int encoded = (MSB<<1)|LSB;
-            int sum = (b->inter_val<<2)|encoded;
-            
-            if(sum == 0b1101 || sum == 0b0100 || sum == 0b0010 || sum == 0b1011)
-                b->pos--;
-            if(sum == 0b1110 || sum == 0b0111 || sum == 0b0001 || sum == 0b1000)
-                b->pos++;
-
-            b->inter_val = encoded;
-        }
-
-        void updateEncoderR(){    
-            int MSB = digitalRead(r->motor_encA);
-            int LSB = digitalRead(r->motor_encB);
-
-            int encoded = (MSB<<1)|LSB;
-            int sum = (r->inter_val<<2)|encoded;
-            
-            if(sum == 0b1101 || sum == 0b0100 || sum == 0b0010 || sum == 0b1011)
-                r->pos--;
-            if(sum == 0b1110 || sum == 0b0111 || sum == 0b0001 || sum == 0b1000)
-                r->pos++;
-
-            r->inter_val = encoded;
-        }
+        
         void readings(double* _re){
             _re[L_IND] = l->read();
             _re[R_IND] = r->read();
             _re[B_IND] = b->read();
             return _re;
         }
-
 };
 
 int main(){
