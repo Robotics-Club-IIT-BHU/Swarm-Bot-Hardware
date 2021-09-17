@@ -64,3 +64,6 @@ double PiD::compute(long double current){
     prev = curr;
 
 }
+void PiD::set(long double set_target){
+    target = set_target;
+}
