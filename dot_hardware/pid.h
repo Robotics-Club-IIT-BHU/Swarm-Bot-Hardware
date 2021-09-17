@@ -62,7 +62,7 @@ double PiD::compute(long double current){
         prev_error = error;
     }
     prev = curr;
-
+    return pid_feed;
 }
 void PiD::set(long double set_target){
     target = set_target;

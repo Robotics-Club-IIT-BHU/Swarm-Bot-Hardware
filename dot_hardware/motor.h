@@ -1,6 +1,7 @@
 #include "pid.h"
 #include <wiringPi.h>
 #include <softPwm.h>
+#include <pthread.h>
 
 #define pi_0 30
 #define pi_1 31
@@ -56,20 +57,24 @@ class Motor{
         int motor_p;
         int motor_n;
         int motor_e;
+        int m_effort;
         
     public:
+        pthread_t thread_id;
         int motor_encA;
         int motor_encB;
         long pos;
         int inter_val;
+        long set_target;
 
         PiD* pid_obj;
         Motor(int, int, int, int, int, double, double, double);
-        double control(double);
+        void control(void);
         double read();
+        void set(long double);
         //void updateEncoder();
 };
-Motor::Motor(int p, int n, int e, int a, int b, double Kp, double Kd, double Ki){
+Motor::Motor(int p, int n, int e, int a, int b, double Kp, double Kd, double Ki):m_effort(100){
     motor_encA = a;
     motor_encB = b;
     motor_p = p;
@@ -82,13 +87,29 @@ Motor::Motor(int p, int n, int e, int a, int b, double Kp, double Kd, double Ki)
     softPwmCreate(motor_e, 0, 100);
 
     pid_obj = new PiD(Kp,Kd,Ki);
-    
+    pthread_create(&thread_id, NULL, &Motor::control, this);
 }
 double Motor::read(){
     return 2*PI*(double)((long double)pos/((long double)ENC_PULSE_PER_REV));
 }
 
-double Motor::control(double target){
+void Motor::control(){
+    double val = pid_obj->compute(this->pos);
+    
+    if(abs(val)<0.1)continue;
+    if(val<0){
+        digitalWrite(motor_p, LOW);
+        digitalWrite(motor_n, HIGH);
+        softPwmWrite(motor_e, min(-val, m_effort));
+    } else {
+        digitalWrite(motor_p, HIGH);
+        digitalWrite(motor_n, LOW);
+        softPwmWrite(motor_e, min(val, m_effort));
+    }
+}
+
+void Motor::set(long double target){
+    set_target = target;
     long pos_in_int = ENC_PULSE_PER_REV*(long)(target/(2*PI));
     pid_obj->set(pos_in_int);
 }
