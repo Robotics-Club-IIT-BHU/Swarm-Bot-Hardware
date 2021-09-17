@@ -1,5 +1,6 @@
 #include "motor.h"
 #include <wiringPi.h>
+#include <unistd.h>
 
 #define L_IND 0
 #define R_IND 1
@@ -53,17 +54,20 @@ void updateEncoderR(){
     r->inter_val = encoded;
 }
 
-void* controlL()
+void* controlL(void *vargp)
 {
     l->control();
+    sleep(0.001);
 }
-void* controlR()
+void* controlR(void *vargp)
 {
     r->control();
+    sleep(0.001);
 }
-void* controlB()
+void* controlB(void *vargp)
 {
     b->control();
+    sleep(0.001);
 }
 class OmniDriver{
     private:
