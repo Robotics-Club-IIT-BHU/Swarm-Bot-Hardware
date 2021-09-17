@@ -56,12 +56,13 @@ class Motor{
         int motor_p;
         int motor_n;
         int motor_e;
-        long pos;
-        int inter_val;
-
+        
     public:
         int motor_encA;
         int motor_encB;
+        long pos;
+        int inter_val;
+
         PiD* pid_obj;
         Motor(int, int, int, int, int, double, double, double);
         double control(double);

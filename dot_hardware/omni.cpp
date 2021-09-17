@@ -8,14 +8,14 @@ void updateEncoderA(){
     int LSB = digitalRead(a->motor_encB);
 
     int encoded = (MSB<<1)|LSB;
-    int sum = (inter_val<<2)|encoded;
+    int sum = (a->inter_val<<2)|encoded;
     
     if(sum == 0b1101 || sum == 0b0100 || sum == 0b0010 || sum == 0b1011)
-        pos--;
+        a->pos--;
     if(sum == 0b1110 || sum == 0b0111 || sum == 0b0001 || sum == 0b1000)
-        pos++;
+        a->pos++;
 
-    inter_val = encoded;
+    a->inter_val = encoded;
 }
 int main(){
 
