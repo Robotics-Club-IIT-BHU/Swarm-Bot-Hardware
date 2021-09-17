@@ -79,7 +79,7 @@ Motor::Motor(int p, int n, int e, int a, int b, double Kp, double Kd, double Ki)
     pinMode(motor_p, OUTPUT);
     pinMode(motor_n, OUTPUT);
     softPwmCreate(motor_e, 0, 100);
-    
+
     pid_obj = new PiD(Kp,Kd,Ki);
 
 #ifndef __PI_WIRING_SET__
@@ -109,5 +109,5 @@ double Motor::read(){
 
 double Motor::control(double target){
     long pos_in_int = ENC_PULSE_PER_REV*(long)(target/(2*PI));
-    PiD->set(pos_in_int);
+    pid_obj->set(pos_in_int);
 }
