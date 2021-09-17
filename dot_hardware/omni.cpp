@@ -3,7 +3,7 @@
 
 Motor* a;
 
-void updateEncoderA(){
+void updateEncoderA(){    
     int MSB = digitalRead(a->motor_encA);
     int LSB = digitalRead(a->motor_encB);
 
@@ -18,6 +18,11 @@ void updateEncoderA(){
     a->inter_val = encoded;
 }
 int main(){
+
+#ifndef __PI_WIRING_SET__
+#define __PI_WIRING_SET__
+    wiringPiSetup();
+#endif
 
     a = new Motor(pi_22, pi_23, pi_27, pi_17, pi_18, 10.0, 100.0, 0.0);
     wiringPiISR(a->motor_encA, INT_EDGE_BOTH, updateEncoderA);

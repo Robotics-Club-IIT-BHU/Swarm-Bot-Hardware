@@ -82,11 +82,6 @@ Motor::Motor(int p, int n, int e, int a, int b, double Kp, double Kd, double Ki)
     softPwmCreate(motor_e, 0, 100);
 
     pid_obj = new PiD(Kp,Kd,Ki);
-
-#ifndef __PI_WIRING_SET__
-#define __PI_WIRING_SET__
-    wiringPiSetup();
-#endif
     
 }
 double Motor::read(){
