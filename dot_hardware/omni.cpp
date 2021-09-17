@@ -83,7 +83,6 @@ class OmniDriver{
             _re[L_IND] = l->read();
             _re[R_IND] = r->read();
             _re[B_IND] = b->read();
-            return _re;
         }
 };
 
@@ -92,7 +91,7 @@ int main(){
     OmniDriver div;
     while(true){
         double read[3];
-        div->readings(read);
+        div.readings(read);
         std::cout<<"L: "<<read[L_IND]<<" R: "<<read[R_IND]<<" B: "<<read[B_IND]<<"\n";
         delay(10);
         // softPwmWrite(pi_27, 100);

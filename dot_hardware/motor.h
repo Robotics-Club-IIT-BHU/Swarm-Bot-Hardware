@@ -69,7 +69,7 @@ class Motor{
 
         PiD* pid_obj;
         Motor(int, int, int, int, int, double, double, double);
-        void control(void);
+        void *control(void);
         double read();
         void set(long double);
         //void updateEncoder();
@@ -93,10 +93,10 @@ double Motor::read(){
     return 2*PI*(double)((long double)pos/((long double)ENC_PULSE_PER_REV));
 }
 
-void Motor::control(){
+void* Motor::control(){
     double val = pid_obj->compute(this->pos);
     
-    if(abs(val)<0.1)continue;
+    if(abs(val)<0.1)return;
     if(val<0){
         digitalWrite(motor_p, LOW);
         digitalWrite(motor_n, HIGH);
