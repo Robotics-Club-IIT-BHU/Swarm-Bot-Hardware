@@ -85,7 +85,7 @@ Motor::Motor(int p, int n, int e, int a, int b, double Kp, double Kd, double Ki)
     
 }
 double Motor::read(){
-    return 2*PI*(double)(pos/((long)ENC_PULSE_PER_REV));
+    return 2*PI*(double)((long double)pos/((long double)ENC_PULSE_PER_REV));
 }
 
 double Motor::control(double target){
