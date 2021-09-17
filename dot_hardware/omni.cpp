@@ -25,7 +25,7 @@ int main(){
     wiringPiSetup();
 #endif
 
-    a = new Motor(pi_22, pi_23, pi_27, pi_17, pi_18, 10.0, 100.0, 0.0);
+    a = new Motor(pi_22, pi_23, pi_27, pi_17, pi_4, 10.0, 100.0, 0.0);
     wiringPiISR(a->motor_encA, INT_EDGE_BOTH, updateEncoderA);
     wiringPiISR(a->motor_encB, INT_EDGE_BOTH, updateEncoderA);
 
