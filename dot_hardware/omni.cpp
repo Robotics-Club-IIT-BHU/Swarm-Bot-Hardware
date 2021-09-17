@@ -95,7 +95,7 @@ class OmniDriver{
 
             wiringPiISR(b->motor_encA, INT_EDGE_BOTH, updateEncoderB);
             wiringPiISR(b->motor_encB, INT_EDGE_BOTH, updateEncoderB);
-
+            std::cout<<"here";
             pthread_create(&(l->thread_id), NULL, controlL, NULL);
             pthread_create(&(r->thread_id), NULL, controlR, NULL);
             pthread_create(&(b->thread_id), NULL, controlB, NULL);
