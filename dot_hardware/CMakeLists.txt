@@ -16,9 +16,9 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   sensor_msgs
 )
-# find_package(wiringPi REQUIRED)
-# find_package(Threads REQUIRED)
-
+#find_package(wiringPi REQUIRED)
+find_package(Threads REQUIRED)
+find_library(WIRINGPI_LIBRARIES NAMES wiringPi)
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -112,7 +112,7 @@ catkin_package(
    INCLUDE_DIRS include
 #  LIBRARIES dot_hard
   CATKIN_DEPENDS roscpp rospy tf
-  DEPENDS wiringPi
+#  DEPENDS wiringPi
 )
 
 ###########
@@ -154,6 +154,8 @@ add_executable(omni_drive_node src/omni.cpp)
 ## Specify libraries to link a library or executable target against
 target_link_libraries(omni_drive_node
   ${catkin_LIBRARIES}
+  ${WIRINGPI_LIBRARIES}
+  ${CMAKE_THREAD_LIBS_INIT}
 )
 
 #############
