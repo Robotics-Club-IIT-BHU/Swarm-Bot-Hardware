@@ -59,7 +59,7 @@ class Motor{
         int motor_p;
         int motor_n;
         int motor_e;
-        int m_effort;
+        double m_effort;
         
     public:
         pthread_t thread_id;

@@ -11,7 +11,7 @@
 #include <geometry_msgs/TransformStamped.h>
 #include <sensor_msgs/Imu.h>
 
-#define L 
+#define L 0.04
 #define R 0.01905
 #define piby30 0.1047197551196597705355242034774843062905347323976457118988037109375 // long double thirty = 30; long double mOne = -1; printf("%1.70Lf\n", (long double) acos(mOne) / thirty);
 #define piby2 1.5707963267948965579989817342720925807952880859375 // long double two = 2; long double mOne = -1; printf("%1.70Lf\n", (long double) acos(mOne) / two);
@@ -145,8 +145,8 @@ void imu_callback(const sensor_msgs::Imu::ConstPtr& msg){
         msg->orientation.w);
     tf::Matrix3x3 m(q);
 
-    m.getRPY(p_.rol, p_.pit p_.yaw);
-    odom_theta = p_.yaw;
+    m.getRPY(p_.rol, p_.pit, p_.yaw);
+    odom_.theta = p_.yaw;
 }
 
 
@@ -264,7 +264,7 @@ int main(int argc, char** argv){
 
     double hz=100;
     ros::Rate rate(hz);
-    
+    double dt_ = 1.0/hz;
     OmniDriver* div;
     div = new OmniDriver();
 
@@ -283,8 +283,8 @@ int main(int argc, char** argv){
         wheel_.bpos = read[B_IND];
         //delay(10);
         
-        double vmx=cos(yaw)*vx-sin(yaw)*vy;
-        double vmy=-sin(yaw)*vx-cos(yaw)*vy;
+        double vmx=cos(p_.yaw)*vx-sin(p_.yaw)*vy;
+        double vmy=-sin(p_.yaw)*vx-cos(p_.yaw)*vy;
         double wmp = wp ;//- yaw;
         
         double v1, v2, v3;
