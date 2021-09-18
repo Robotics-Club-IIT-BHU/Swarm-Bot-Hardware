@@ -1,4 +1,4 @@
-#include "pid.h"
+#include "dot_hardware/pid.h"
 #include <wiringPi.h>
 #include <softPwm.h>
 #include <pthread.h>

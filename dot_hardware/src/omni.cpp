@@ -1,4 +1,4 @@
-#include "motor.h"
+#include "dot_hardware/motor.h"
 #include <wiringPi.h>
 #include <unistd.h>
 #include <ros/ros.h>
