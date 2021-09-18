@@ -11,6 +11,11 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   tf
+  tf2_ros
+  nav_msgs
+  geometry_msgs
+  std_msgs
+  sensor_msgs
 )
 # find_package(wiringPi REQUIRED)
 # find_package(Threads REQUIRED)

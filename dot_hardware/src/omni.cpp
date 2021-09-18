@@ -2,10 +2,27 @@
 #include <wiringPi.h>
 #include <unistd.h>
 #include <ros/ros.h>
-
+#include <geometry_msgs/Twist.h>
+#include <geometry_msgs/Pose.h>
+#include <geometry_msgs/Quaternion.h>
+#include <nav_msgs/Odometry.h>
+#include <tf/transform_broadcaster.h>
+#include <tf2_ros/transform_listener.h>
+#include <tf2/LinearMath/Quaternion.h>
+#include <tf2_ros/transform_broadcaster.h>
+#include <geometry_msgs/TransformStamped.h>
+#include <tf2/convert.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <sensor_msgs/Imu.h>
 
 #define L 
 #define R 0.01905
+#define piby30 0.1047197551196597705355242034774843062905347323976457118988037109375 // long double thirty = 30; long double mOne = -1; printf("%1.70Lf\n", (long double) acos(mOne) / thirty);
+#define piby2 1.5707963267948965579989817342720925807952880859375 // long double two = 2; long double mOne = -1; printf("%1.70Lf\n", (long double) acos(mOne) / two);
+#define pi 3.141592653589793115997963468544185161590576171875 // long double mOne = -1; printf("%1.70Lf\n", (long double) acos(mOne));
+#define pi2 6.28318530717958623199592693708837032318115234375 // long double two = 2; long double mOne = -1; printf("%1.70Lf\n", (long double) two * acos(mOne));
+#define sqrt3 1.732050807568877193176604123436845839023590087890625 // long double three = 3; printf("%1.70Lf\n", (long double) sqrt(three));
+#define sqrt3by2 0.8660254037844385965883020617184229195117950439453125 // long double two = 2; long double three = 3; printf("%1.70Lf\n", (sqrt(three) / two));
 
 #define L_IND 0
 #define R_IND 1
@@ -17,6 +34,7 @@ Motor* b;
 ros::Time timeCurrent;
 ros::Time timePrevious;
 ros::Publisher pub_;
+ros::Subscriber imu_sub, cmd_vel_sub;
 
 double vx;
 double vy;
@@ -31,9 +49,9 @@ struct Wheel{
 struct Pose{
     double x;
     double y;
-    double r;
-    double p;
-    double y;
+    double rol;
+    double pit;
+    double yaw;
 } p_;
 
 struct Odom{
@@ -59,8 +77,8 @@ void updateAndOdom(double* read){
     x     = ((1.73 * v_right0) - (1.73 * v_left0)) / 3.0;
     theta = (v_left0 + v_back0 + v_right0) / (3*0.04);
 
-    double X = cos(odom_theta)*x + sin(odom_theta)*y;
-    double Y = sin(odom_theta)*x - cos(odom_theta)*y;
+    double X = cos(odom_.theta)*x + sin(odom_.theta)*y;
+    double Y = sin(odom_.theta)*x - cos(odom_.theta)*y;
 
     odom_.x += X * duration;
     odom_.y += Y * duration;
@@ -73,13 +91,13 @@ void publishOdom(){
     geometry_msgs::TransformStamped odom_trans;
 
     tf2::Quaternion tf_quat;
-    tf_quat.setRPY(0, 0, odom_theta);
+    tf_quat.setRPY(0, 0, odom_.theta);
 
     odom_trans.header.stamp = ros::Time::now();
     odom_trans.header.frame_id = "odom";
     odom_trans.child_frame_id = "origin_link";
-    odom_trans.transform.translation.x =odom_x;
-    odom_trans.transform.translation.y =odom_y;
+    odom_trans.transform.translation.x =odom_.x;
+    odom_trans.transform.translation.y =odom_.y;
     odom_trans.transform.translation.z =0;
 
     geometry_msgs::Quaternion geo_Quat ;
@@ -94,7 +112,7 @@ void publishOdom(){
     odom.header.frame_id = "odom" ;
 
     //set the position
-    cout<<odom_trans.transform.translation.x<<" "
+    std::cout<<odom_trans.transform.translation.x<<" "
       <<odom_trans.transform.translation.y<<" "
       <<odom_trans.transform.translation.z<<"\n";
     odom.pose.pose.position.x = odom_trans.transform.translation.x ;
@@ -104,13 +122,13 @@ void publishOdom(){
 
     //set the velocity
     odom.child_frame_id = "origin_link";
-    odom.twist.twist.linear.x = x ;
-    odom.twist.twist.linear.y = y ;
+    odom.twist.twist.linear.x = odom_.x ;
+    odom.twist.twist.linear.y = odom_.y ;
     odom.twist.twist.linear.z = 0 ;
 
     odom.twist.twist.angular.x= 0 ;
     odom.twist.twist.angular.y= 0 ;
-    odom.twist.twist.angular.z= theta ;
+    odom.twist.twist.angular.z= odom_.theta ;
 
     pub_.publish(odom);
 }
@@ -128,8 +146,8 @@ void imu_callback(const sensor_msgs::Imu::ConstPtr& msg){
         msg->orientation.w);
     tf::Matrix3x3 m(q);
 
-    m.getRPY(p_.r, p_.p, p_.y);
-    odom_theta = p_.y;
+    m.getRPY(p_.rol, p_.pit p_.yaw);
+    odom_theta = p_.yaw;
 }
 
 
@@ -255,7 +273,7 @@ int main(int argc, char** argv){
     imu_sub = n.subscribe("imu", 100, imu_callback);
     pub_ = n.advertise<nav_msgs::Odometry>("odom", 50) ;
     
-    while(rps::ok()){
+    while(ros::ok()){
         double read[3];
         div->readings(read);
         updateAndOdom(read);
