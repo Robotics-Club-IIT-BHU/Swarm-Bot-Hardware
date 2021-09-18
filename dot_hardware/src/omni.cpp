@@ -268,7 +268,7 @@ int main(int argc, char** argv){
     OmniDriver* div;
     div = new OmniDriver();
 
-    cmd_vel_sub = n.subscribe("cmd_vel", 1000, velocity_callback, this);
+    cmd_vel_sub = n.subscribe("cmd_vel", 1000, velocity_callback);
     imu_sub = n.subscribe("imu", 100, imu_callback);
     pub_ = n.advertise<nav_msgs::Odometry>("odom", 50) ;
     
