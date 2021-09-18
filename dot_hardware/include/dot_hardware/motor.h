@@ -2,6 +2,7 @@
 #include <wiringPi.h>
 #include <softPwm.h>
 #include <pthread.h>
+#include <iostream>
 
 #define pi_0 30
 #define pi_1 31
@@ -33,7 +34,7 @@
 #define pi_27 2
 
 #define PI 3.14159
-#define min(a,b) a>b?b:a
+//#define min(a,b) a>b?b:a
 
 #define ENC_PULSE_PER_REV 2800
 
@@ -100,11 +101,11 @@ int Motor::control(){
     if(val<0){
         digitalWrite(motor_p, HIGH);
         digitalWrite(motor_n, LOW);
-        softPwmWrite(motor_e, (int)min(-val, m_effort));
+        softPwmWrite(motor_e, (int)std::min(-val, m_effort));
     } else {
         digitalWrite(motor_p, LOW);
         digitalWrite(motor_n, HIGH);
-        softPwmWrite(motor_e, (int)min(val, m_effort));
+        softPwmWrite(motor_e, (int)std::min(val, m_effort));
     }
     return 1;
 }

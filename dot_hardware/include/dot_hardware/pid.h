@@ -1,6 +1,6 @@
 #include <iostream>
 #include <chrono>
-#define max(a,b) a>b?a:b
+//#define max(a,b) a>b?a:b
 
 class PiD{
     using clock_t = std::chrono::high_resolution_clock;
@@ -48,7 +48,7 @@ double PiD::compute(long double current){
     double pid_feed=0;
     std::chrono::high_resolution_clock::time_point curr = clock_t::now();
     dt_ = std::chrono::duration<double>(curr - prev).count();
-    dt_ = max(dt_, 0.0001);
+    dt_ = std::max(dt_, 0.0001);
     if(error==prev_error){
         error = target-current;
         pid_feed = Kp*error;
