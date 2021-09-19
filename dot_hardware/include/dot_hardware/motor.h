@@ -71,12 +71,13 @@ class Motor{
 
         PiD* pid_obj;
         Motor(int, int, int, int, int, double, double, double);
+        ~Motor();
         int control(void);
         double read();
         void set(long double);
         //void updateEncoder();
 };
-Motor::Motor(int p, int n, int e, int a, int b, double Kp, double Kd, double Ki):m_effort(100){
+Motor::Motor(int p, int n, int e, int a, int b, double Kp, double Kd, double Ki):m_effort(90){
     motor_encA = a;
     motor_encB = b;
     motor_p = p;
@@ -114,4 +115,9 @@ void Motor::set(long double target){
     set_target = target;
     long pos_in_int = ENC_PULSE_PER_REV*(long)(target/(2*PI));
     pid_obj->set(pos_in_int);
+}
+Motor::~Motor(){
+    digitalWrite(motor_p, LOW);
+    digitalWrite(motor_n, LOW);
+    softPwmWrite(motor_e, 0);   
 }
