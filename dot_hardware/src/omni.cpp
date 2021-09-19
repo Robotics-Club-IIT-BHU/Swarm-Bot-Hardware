@@ -278,7 +278,7 @@ int main(int argc, char** argv){
         div->readings(read);
         updateAndOdom(read);
         
-        //std::cout<<"L: "<<read[L_IND]<<" R: "<<read[R_IND]<<" B: "<<read[B_IND]<<"\n";
+        std::cout<<"L: "<<read[L_IND]<<" R: "<<read[R_IND]<<" B: "<<read[B_IND]<<"\n";
         wheel_.lpos = read[L_IND];
         wheel_.rpos = read[R_IND];
         wheel_.bpos = read[B_IND];
