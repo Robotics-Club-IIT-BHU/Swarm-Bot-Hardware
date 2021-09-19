@@ -111,9 +111,9 @@ void publishOdom(){
     odom.header.frame_id = "odom" ;
 
     //set the position
-    std::cout<<odom_trans.transform.translation.x<<" "
-      <<odom_trans.transform.translation.y<<" "
-      <<odom_trans.transform.translation.z<<"\n";
+    // std::cout<<odom_trans.transform.translation.x<<" "
+    //   <<odom_trans.transform.translation.y<<" "
+    //   <<odom_trans.transform.translation.z<<"\n";
     odom.pose.pose.position.x = odom_trans.transform.translation.x ;
     odom.pose.pose.position.y = odom_trans.transform.translation.y ;
     odom.pose.pose.position.z = odom_trans.transform.translation.z ;
