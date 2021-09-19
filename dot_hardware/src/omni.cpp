@@ -135,6 +135,7 @@ void velocity_callback(const geometry_msgs::Twist& msg){
     vx = msg.linear.x;
     vy = msg.linear.y;
     wp = msg.angular.z;
+    std::cout<<vx<<" "<<vy<<" "<<wp<<" "<<"\n";
 }
 
 void imu_callback(const sensor_msgs::Imu::ConstPtr& msg){
@@ -268,7 +269,7 @@ int main(int argc, char** argv){
     OmniDriver* div;
     div = new OmniDriver();
 
-    cmd_vel_sub = n.subscribe("cmd_vel", 1000, velocity_callback);
+    cmd_vel_sub = n.subscribe("/cmd_vel", 1000, velocity_callback);
     imu_sub = n.subscribe("imu", 100, imu_callback);
     pub_ = n.advertise<nav_msgs::Odometry>("odom", 50) ;
     
