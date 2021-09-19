@@ -283,8 +283,8 @@ int main(int argc, char** argv){
         wheel_.bpos = read[B_IND];
         //delay(10);
         
-        double vmx=cos(p_.yaw)*vx-sin(p_.yaw)*vy;
-        double vmy=-sin(p_.yaw)*vx-cos(p_.yaw)*vy;
+        double vmx= cos(p_.yaw)*vx-sin(p_.yaw)*vy;
+        double vmy= -sin(p_.yaw)*vx-cos(p_.yaw)*vy;
         double wmp = wp ;//- yaw;
         
         double v1, v2, v3;
@@ -305,15 +305,7 @@ int main(int argc, char** argv){
 
         ros::spinOnce();
         rate.sleep();
-        // softPwmWrite(pi_27, 100);
-        // if((count/10000)%2){
-        //     digitalWrite(pi_22, HIGH);
-        //     digitalWrite(pi_23, LOW);
-        // } else {
-        //     digitalWrite(pi_22, LOW);
-        //     digitalWrite(pi_23, HIGH);
-        // }
-        // count++;
+        
     }
     return 0;
 }
