@@ -21,6 +21,7 @@ class PiD{
         double compute(long double);
         void set(long double);
         void reset(void);
+        ~PID();
 };
 
 PiD::PiD(double kp=-1, double kd=-1, double ki=-1, double dt=-1):Kp(10), Kd(100), Ki(0.2)
