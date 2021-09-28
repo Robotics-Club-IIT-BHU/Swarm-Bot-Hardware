@@ -239,12 +239,13 @@ class OmniDriver{
 #define __PI_WIRING_SET__
             wiringPiSetup();
 #endif
-            int lp = atoi(getenv("LP")), ln = atoi(getenv("LN")), lenb = atoi(getenv("LENB")), lencp = atoi(getenv("LENCP")), lencn = atoi(getenv("LENCN"));
-            int rp = atoi(getenv("RP")), rn = atoi(getenv("RN")), renb = atoi(getenv("RENB")), rencp = atoi(getenv("RENCP")), rencn = atoi(getenv("RENCN"));
-            int bp = atoi(getenv("BP")), bn = atoi(getenv("BN")), benb = atoi(getenv("BENB")), bencp = atoi(getenv("BENCP")), bencn = atoi(getenv("BENCN"));
-            if(lp==NULL)lp=pi_23;if(ln==NULL)ln=pi_22;if(lenb==NULL)lenb=pi_27;if(lencp==NULL)lencp=pi_17;if(lencn==NULL)lencn=pi_4;
-            if(rp==NULL)rp=pi_10;if(rn==NULL)rn=pi_9;if(renb==NULL)renb=pi_25;if(rencp==NULL)rencp=pi_20;if(rencn==NULL)rencn=pi_21;
-            if(bp==NULL)bp=pi_6;if(bn==NULL)bn=pi_5;if(benb==NULL)benb=pi_12;if(bencp==NULL)bencp=pi_11;if(bencn==NULL)bencn=pi_26;
+            int lp = getenv("LP")?atoi(getenv("LP")):pi_23, ln = getenv("LN")?atoi(getenv("LN")):pi_22, lenb = getenv("LENB")?atoi(getenv("LENB")):pi_27;
+            int lencp = getenv("LENCP")?atoi(getenv("LENCP")):pi_17, lencn = getenv("LENCN")?atoi(getenv("LENCN")):pi_4;
+            int rp = getenv("RP")?atoi(getenv("RP")):pi_10, rn = getenv("RN")?atoi(getenv("RN")):pi_9, renb = getenv("RENB")?atoi(getenv("RENB")):pi_25;
+            int rencp = getenv("RENCP")?atoi(getenv("RENCP")):pi_20, rencn = getenv("RENCN")?atoi(getenv("RENCN")):pi_21;
+            int bp = getenv("BP")?atoi(getenv("BP")):pi_6, bn = getenv("BN")?atoi(getenv("BN")):pi_5, benb = getenv("BENB")?atoi(getenv("BENB")):pi_12;
+            int bencp = getenv("BENCP")?atoi(getenv("BENCP")):pi_11, bencn = getenv("BENCN")?atoi(getenv("BENCN")):pi_26;
+
             l = new Motor(lp, ln, lenb, lencp, lencn, 5.0, 1.0, 0.01);
             r = new Motor(rp, rn, renb, rencp, rencn, 5.0, 1.0, 0.01);
             b = new Motor(bp, bn, benb, bencp, bencn, 5.0, 1.0, 0.01);
