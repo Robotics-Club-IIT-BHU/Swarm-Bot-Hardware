@@ -239,9 +239,9 @@ class OmniDriver{
 #define __PI_WIRING_SET__
             wiringPiSetup();
 #endif
-            double lp = getenv("LP"), ln = getenv("LN"), lenb = getenv("LENB"), lencp = getenv("LENCP"), lencn = getenv("LENCN");
-            double rp = getenv("RP"), rn = getenv("RN"), renb = getenv("RENB"), rencp = getenv("RENCP"), rencn = getenv("RENCN");
-            double bp = getenv("BP"), bn = getenv("BN"), benb = getenv("BENB"), bencp = getenv("BENCP"), bencn = getenv("BENCN");
+            int lp = atoi(getenv("LP")), ln = atoi(getenv("LN")), lenb = atoi(getenv("LENB")), lencp = atoi(getenv("LENCP")), lencn = atoi(getenv("LENCN"));
+            int rp = atoi(getenv("RP")), rn = atoi(getenv("RN")), renb = atoi(getenv("RENB")), rencp = atoi(getenv("RENCP")), rencn = atoi(getenv("RENCN"));
+            int bp = atoi(getenv("BP")), bn = atoi(getenv("BN")), benb = atoi(getenv("BENB")), bencp = atoi(getenv("BENCP")), bencn = atoi(getenv("BENCN"));
             if(lp==NULL)lp=pi_23;if(ln==NULL)ln=pi_22;if(lenb==NULL)lenb=pi_27;if(lencp==NULL)lencp=pi_17;if(lencn==NULL)lencn=pi_4;
             if(rp==NULL)rp=pi_10;if(rn==NULL)rn=pi_9;if(renb==NULL)renb=pi_25;if(rencp==NULL)rencp=pi_20;if(rencn==NULL)rencn=pi_21;
             if(bp==NULL)bp=pi_6;if(bn==NULL)bn=pi_5;if(benb==NULL)benb=pi_12;if(bencp==NULL)bencp=pi_11;if(bencn==NULL)bencn=pi_26;
