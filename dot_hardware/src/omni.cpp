@@ -32,6 +32,8 @@ ros::Time timePrevious;
 ros::Publisher pub_;
 ros::Subscriber imu_sub, cmd_vel_sub;
 
+bool imu_flag=true;
+double yaw_offset = 0;
 double vx;
 double vy;
 double wp;
@@ -73,8 +75,8 @@ void updateAndOdom(double* read){
     x     = ((1.73 * v_right0) - (1.73 * v_left0)) / 3.0;
     theta = (v_left0 + v_back0 + v_right0) / (3*0.04);
 
-    double X = cos(odom_.theta)*x + sin(odom_.theta)*y;
-    double Y = sin(odom_.theta)*x - cos(odom_.theta)*y;
+    double X = cos(odom_.theta)*x - sin(odom_.theta)*y;
+    double Y = sin(odom_.theta)*x + cos(odom_.theta)*y;
 
     odom_.x += X * duration;
     odom_.y += Y * duration;
@@ -145,9 +147,14 @@ void imu_callback(const sensor_msgs::Imu::ConstPtr& msg){
         msg->orientation.z,
         msg->orientation.w);
     tf::Matrix3x3 m(q);
-
     m.getRPY(p_.rol, p_.pit, p_.yaw);
-    odom_.theta = p_.yaw;
+
+    if(imu_flag){
+        imu_flag=false;
+        yaw_offset = p_.yaw;
+    }
+
+    odom_.theta = p_.yaw - yaw_offset;
 }
 
 
@@ -262,7 +269,7 @@ int main(int argc, char** argv){
     ros::init(argc, argv, "omnidrive");
     ros::NodeHandle n("");
     timePrevious = ros::Time::now();
-
+    
     double hz=100;
     ros::Rate rate(hz);
     double dt_ = 1.0/hz;
@@ -284,8 +291,8 @@ int main(int argc, char** argv){
         wheel_.bpos = read[B_IND];
         //delay(10);
         
-        double vmx= cos(p_.yaw)*vx-sin(p_.yaw)*vy;
-        double vmy= -sin(p_.yaw)*vx-cos(p_.yaw)*vy;
+        double vmx= vx;
+        double vmy= vy;
         double wmp = wp ;//- yaw;
         
         double v1, v2, v3;
