@@ -10,6 +10,7 @@
 #include <tf/tf.h>
 #include <geometry_msgs/TransformStamped.h>
 #include <sensor_msgs/Imu.h>
+#include <cstdlib>
 
 #define L 0.04
 #define R 0.01905
@@ -238,10 +239,15 @@ class OmniDriver{
 #define __PI_WIRING_SET__
             wiringPiSetup();
 #endif
-
-            l = new Motor(pi_23, pi_22, pi_27, pi_17, pi_4, 5.0, 1.0, 0.01);
-            r = new Motor(pi_10, pi_9, pi_25, pi_20, pi_21, 5.0, 1.0, 0.01);
-            b = new Motor(pi_6, pi_5, pi_12, pi_11, pi_26, 5.0, 1.0, 0.01);
+            double lp = getenv("LP"), ln = getenv("LN"), lenb = getenv("LENB"), lencp = getenv("LENCP"), lencn = getenv("LENCN");
+            double rp = getenv("RP"), rn = getenv("RN"), renb = getenv("RENB"), rencp = getenv("RENCP"), rencn = getenv("RENCN");
+            double bp = getenv("BP"), bn = getenv("BN"), benb = getenv("BENB"), bencp = getenv("BENCP"), bencn = getenv("BENCN");
+            if(lp==NULL)lp=pi_23;if(ln==NULL)ln=pi_22;if(lenb==NULL)lenb=pi_27;if(lencp==NULL)lencp=pi_17;if(lencn==NULL)lencn=pi_4;
+            if(rp==NULL)rp=pi_10;if(rn==NULL)rn=pi_9;if(renb==NULL)renb=pi_25;if(rencp==NULL)rencp=pi_20;if(rencn==NULL)rencn=pi_21;
+            if(bp==NULL)bp=pi_6;if(bn==NULL)bn=pi_5;if(benb==NULL)benb=pi_12;if(bencp==NULL)bencp=pi_11;if(bencn==NULL)bencn=pi_26;
+            l = new Motor(lp, ln, lenb, lencp, lencn, 5.0, 1.0, 0.01);
+            r = new Motor(rp, rn, renb, rencp, rencn, 5.0, 1.0, 0.01);
+            b = new Motor(bp, bn, benb, bencp, bencn, 5.0, 1.0, 0.01);
             
             wiringPiISR(l->motor_encA, INT_EDGE_BOTH, updateEncoderL);
             wiringPiISR(l->motor_encB, INT_EDGE_BOTH, updateEncoderL);
