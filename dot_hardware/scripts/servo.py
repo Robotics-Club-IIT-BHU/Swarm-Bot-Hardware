@@ -58,7 +58,7 @@ def main_loop():
 				v1, v2 = coor2ang(p.x, p.y)
 				servo1.value = v1
 				servo2.value = v2
-				new_goal = False
+				#new_goal = False
 			else: 
 				val1+=d1
 				val2+=d2
