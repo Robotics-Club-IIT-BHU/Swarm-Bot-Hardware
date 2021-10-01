@@ -276,7 +276,8 @@ int main(int argc, char** argv){
     ros::init(argc, argv, "omnidrive");
     ros::NodeHandle n("");
     timePrevious = ros::Time::now();
-    
+    int debug = getenv("DEBUG")?atoi(getenv("DEBUG")):0;
+
     double hz=100;
     ros::Rate rate(hz);
     double dt_ = 1.0/hz;
@@ -290,16 +291,18 @@ int main(int argc, char** argv){
     long int i = 0;
 
     while(ros::ok()){
-        i++;
-        i/=100000;
-        if((i/1000)%2==0){
-            std::cout<<"x\n";
-            vx = 0.1;
-            vy = 0;
-        } else {
-            std::cout<<"y\n";
-            vy = 0.1;
-            vx = 0;
+        if(debug){
+            i++;
+            i/=100000;
+            if((i/1000)%2==0){
+                std::cout<<"x\n";
+                vx = 0.1;
+                vy = 0;
+            } else {
+                std::cout<<"y\n";
+                vy = 0.1;
+                vx = 0;
+            }
         }
 
         double read[3];
