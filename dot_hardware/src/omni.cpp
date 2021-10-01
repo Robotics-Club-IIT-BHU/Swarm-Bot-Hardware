@@ -287,7 +287,19 @@ int main(int argc, char** argv){
     imu_sub = n.subscribe("imu", 100, imu_callback);
     pub_ = n.advertise<nav_msgs::Odometry>("odom", 50) ;
     
+    long int i = 0;
+
     while(ros::ok()){
+        i++;
+        i/=100000;
+        if((i/1000)%2==0){
+            vx = 0.1;
+            vy = 0;
+        } else {
+            vy = 0.1;
+            vx = 0;
+        }
+
         double read[3];
         div->readings(read);
         updateAndOdom(read);

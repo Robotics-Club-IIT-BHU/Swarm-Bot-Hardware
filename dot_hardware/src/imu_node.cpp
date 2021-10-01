@@ -3,7 +3,10 @@
 #include <wiringPi.h>
 #include <errmsg.h>
 #include <ros/ros.h>
+#include <sensor_msgs/Imu.h>
 
+ros::Publisher imu_pub_;
+sensor_msgs::Imu data;
 static const MPUIMU::Gscale_t GSCALE     = MPUIMU::GFS_250DPS;
 static const MPUIMU::Ascale_t ASCALE     = MPUIMU::AFS_2G;
 static const MPU9250::Mscale_t MSCALE    = MPU2950::MFS_16BITS;
@@ -41,36 +44,22 @@ void setup()
 }
 
 int main(){
+    ros::init(argc, argv, "imu_pub");
+    ros::NodeHandle n("");
+
+    imu_pub_ = n.advertise<sensor_msgs::Imu>("imu",50);
+
+    setup();
+
     static float ax, ay, az, gx, gy, gz, mx, my, mz, temperature;
 
     double hz=100;
-    if(true) {
-
-        gotNewData = false;    
-        if (imu.checkNewData())  { 
-
-            imu.readAccelerometer(ax, ay, az);
-            imu.readGyrometer(gx, gy, gz);
-            imu.readMagnetometer(mx, my, mz);
-            temperature = imu.readTemperature();
+    ros::Rate r(hz);
+    while(ros::ok()){
+        if(imu.checkNewData()){
+            imu.readAccelerometer(data.linear_acceleration.x, data.linear_acceleration.y, data.linear_acceleration.z);
+            imu.readGyrometer(data.angular_velocity.x, data.angular_velocity.y, data.angular_velocity.z);
         }
-    }
-
-    
-    static uint32_t msec_prev;
-    uint32_t msec_curr = millis();
-
-    if (msec_curr-msec_prev > 1000.0/hz) {
-
-        msec_prev = msec_curr;
-
-        printf("\n");
-
-        printf("ax = %d  ay = %d  az = %d mg\n", (int)(1000*ax), (int)(1000*ay), (int)(1000*az));
-        printf("gx = %+2.2f  gy = %+2.2f  gz = %+2.2f deg/s\n", gx, gy, gz);
-        printf("mx = %d  my = %d  mz = %d mG\n", (int)mx, (int)my, (int)mz);
-
-        // Print temperature in degrees Centigrade      
-        printf("Gyro temperature is %+1.1f degrees C\n", temperature);  
+        r.sleep();
     }
 }
