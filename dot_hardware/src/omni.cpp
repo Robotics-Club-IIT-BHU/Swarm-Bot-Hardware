@@ -293,9 +293,11 @@ int main(int argc, char** argv){
         i++;
         i/=100000;
         if((i/1000)%2==0){
+            std::cout<<"x\n";
             vx = 0.1;
             vy = 0;
         } else {
+            std::cout<<"y\n";
             vy = 0.1;
             vx = 0;
         }
