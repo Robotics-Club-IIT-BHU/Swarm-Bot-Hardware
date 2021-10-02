@@ -22,7 +22,7 @@ public:
     /// \param argc Number of main() args.
     /// \param argv The main() args.
     ros_node(std::shared_ptr<driver> driver, int argc, char **argv);
-    void read_data();
+    void read_data(const ros::TimerEvent& event);
     // METHODS
     /// \brief spin Runs the node.
     void spin();

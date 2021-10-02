@@ -74,7 +74,7 @@ ros_node::ros_node(std::shared_ptr<driver> driver, int argc, char **argv)
     ros_node::calibrate_gyroscope(500);
 }
 
-void ros_node::read_data(){
+void ros_node::read_data(const ros::TimerEvent& event){
     ros_node::m_driver->read_data();
 }
 
