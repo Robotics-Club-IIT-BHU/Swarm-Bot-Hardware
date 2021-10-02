@@ -1,9 +1,11 @@
 #include "ros_node.h"
 
-#include <sensor_msgs_ext/accelerometer.h>
-#include <sensor_msgs_ext/gyroscope.h>
-#include <sensor_msgs_ext/magnetometer.h>
-#include <sensor_msgs_ext/temperature.h>
+#include<sensor_msgs/Imu.h>
+
+// #include <sensor_msgs_ext/accelerometer.h>
+// #include <sensor_msgs_ext/gyroscope.h>
+// #include <sensor_msgs_ext/magnetometer.h>
+// #include <sensor_msgs_ext/temperature.h>
 
 #include <cmath>
 
@@ -31,18 +33,18 @@ ros_node::ros_node(std::shared_ptr<driver> driver, int argc, char **argv)
     int param_accel_dlpf_frequency = private_node.param<int>("accel_dlpf_frequency", 0);
     int param_gyro_fsr = private_node.param<int>("gyro_fsr", 0);
     int param_accel_fsr = private_node.param<int>("accel_fsr", 0);
-    float param_max_data_rate = private_node.param<float>("max_data_rate", 8000.0F);
+    float param_max_data_rate = private_node.param<float>("max_data_rate", 150.0F);
 
     // Read calibrations.
     ros_node::m_calibration_accelerometer.load(private_node, "calibration/accelerometer");
     ros_node::m_calibration_magnetometer.load(private_node, "calibration/magnetometer");
 
     // Set up data publishers.
-    ros_node::m_publisher_accelerometer = ros_node::m_node->advertise<sensor_msgs_ext::accelerometer>("imu/accelerometer", 1);
-    ros_node::m_publisher_gyroscope = ros_node::m_node->advertise<sensor_msgs_ext::gyroscope>("imu/gyroscope", 1);
-    ros_node::m_publisher_magnetometer = ros_node::m_node->advertise<sensor_msgs_ext::magnetometer>("imu/magnetometer", 1);
-    ros_node::m_publisher_temperature = ros_node::m_node->advertise<sensor_msgs_ext::temperature>("imu/temperature", 1);
-    
+    // ros_node::m_publisher_accelerometer = ros_node::m_node->advertise<sensor_msgs_ext::accelerometer>("imu/accelerometer", 1);
+    // ros_node::m_publisher_gyroscope = ros_node::m_node->advertise<sensor_msgs_ext::gyroscope>("imu/gyroscope", 1);
+    // ros_node::m_publisher_magnetometer = ros_node::m_node->advertise<sensor_msgs_ext::magnetometer>("imu/magnetometer", 1);
+    // ros_node::m_publisher_temperature = ros_node::m_node->advertise<sensor_msgs_ext::temperature>("imu/temperature", 1);
+    ros_node::m_publisher_raw = ros_node::m_node->advertise<sensor_msgs::Imu>("imu/data_raw",1);
     // Initialize the driver and set parameters.
     try
     {
@@ -160,50 +162,56 @@ void ros_node::deinitialize_driver()
 void ros_node::data_callback(driver::data data)
 {
     // Create accelerometer message.
-    sensor_msgs_ext::accelerometer message_accel;
+    //sensor_msgs_ext::accelerometer message_accel;
+    sensor_msgs::Imu imu_msg_;
     // Set accelerations (convert from g's to m/s^2)
-    message_accel.x = static_cast<double>(data.accel_x) * 9.80665;
-    message_accel.y = static_cast<double>(data.accel_y) * 9.80665;
-    message_accel.z = static_cast<double>(data.accel_z) * 9.80665;
+    imu_msg_.linear_acceleration.x = static_cast<double>(data.accel_x) * 9.80665;
+    imu_msg_.linear_acceleration.y = static_cast<double>(data.accel_y) * 9.80665;
+    imu_msg_.linear_acceleration.z = static_cast<double>(data.accel_z) * 9.80665;
+    // message_accel.x = static_cast<double>(data.accel_x) * 9.80665;
+    // message_accel.y = static_cast<double>(data.accel_y) * 9.80665;
+    // message_accel.z = static_cast<double>(data.accel_z) * 9.80665;
     // Apply calibration.
-    ros_node::m_calibration_accelerometer.calibrate(message_accel.x, message_accel.y, message_accel.z);
+    ros_node::m_calibration_accelerometer.calibrate(imu_msg_.linear_acceleration.x, imu_msg_.linear_acceleration.y, imu_msg_.linear_acceleration.z);
     // Publish message.
-    ros_node::m_publisher_accelerometer.publish(message_accel);
+    //ros_node::m_publisher_accelerometer.publish(message_accel);
 
     // Create gyroscope message.
-    sensor_msgs_ext::gyroscope message_gyro;
+    //sensor_msgs_ext::gyroscope message_gyro;
     // Set rotation rates (convert from deg/sec to rad/sec)
-    message_gyro.x = static_cast<double>(data.gyro_x) * M_PI / 180.0;
-    message_gyro.y = static_cast<double>(data.gyro_y) * M_PI / 180.0;
-    message_gyro.z = static_cast<double>(data.gyro_z) * M_PI / 180.0;
+    imu_msg_.angular_velocity.x = static_cast<double>(data.gyro_x) * M_PI / 180.0;
+    imu_msg_.angular_velocity.y = static_cast<double>(data.gyro_y) * M_PI / 180.0;
+    imu_msg_.angular_velocity.z = static_cast<double>(data.gyro_z) * M_PI / 180.0;
     // If gyroscope calibration is running, add uncalibrate data to window.
     if(ros_node::f_gyroscope_calibrating)
     {
-        ros_node::m_gyroscope_calibration_window.push_back({message_gyro.x, message_gyro.y, message_gyro.z});
+        ros_node::m_gyroscope_calibration_window.push_back({imu_msg_.angular_velocity.x, imu_msg_.angular_velocity.y, imu_msg_.angular_velocity.z});
     }
     // Apply calibration.
-    ros_node::m_calibration_gyroscope.calibrate(message_gyro.x, message_gyro.y, message_gyro.z);
+    ros_node::m_calibration_gyroscope.calibrate(imu_msg_.angular_velocity.x, imu_msg_.angular_velocity.y, imu_msg_.angular_velocity.z);
     // Publish message.
-    ros_node::m_publisher_gyroscope.publish(message_gyro);
+    //ros_node::m_publisher_gyroscope.publish(message_gyro);
 
     // Check if there was a magneto overflow.
-    if(std::isnan(data.magneto_x) == false)
-    {
-        // Create magneto message.
-        sensor_msgs_ext::magnetometer message_mag;
-        // Fill magnetic field strengths (convert from uT to T)
-        message_mag.x = static_cast<double>(data.magneto_x) * 0.000001;
-        message_mag.y = static_cast<double>(data.magneto_y) * 0.000001;
-        message_mag.z = static_cast<double>(data.magneto_z) * 0.000001;
-        // Apply calibration.
-        ros_node::m_calibration_magnetometer.calibrate(message_mag.x, message_mag.y, message_mag.z);
-        // Publish message.
-        ros_node::m_publisher_magnetometer.publish(message_mag);
-    }
+    // if(std::isnan(data.magneto_x) == false)
+    // {
+    //     // Create magneto message.
+    //     sensor_msgs_ext::magnetometer message_mag;
+    //     // Fill magnetic field strengths (convert from uT to T)
+    //     message_mag.x = static_cast<double>(data.magneto_x) * 0.000001;
+    //     message_mag.y = static_cast<double>(data.magneto_y) * 0.000001;
+    //     message_mag.z = static_cast<double>(data.magneto_z) * 0.000001;
+    //     // Apply calibration.
+    //     ros_node::m_calibration_magnetometer.calibrate(message_mag.x, message_mag.y, message_mag.z);
+    //     // Publish message.
+    //     ros_node::m_publisher_magnetometer.publish(message_mag);
+    // }
 
     // Create temperature message.
-    sensor_msgs_ext::temperature message_temp;
-    message_temp.temperature = static_cast<double>(data.temp);
-    // Publish temperature message.
-    ros_node::m_publisher_temperature.publish(message_temp);
+    // sensor_msgs_ext::temperature message_temp;
+    // message_temp.temperature = static_cast<double>(data.temp);
+    // // Publish temperature message.
+    // ros_node::m_publisher_temperature.publish(message_temp);
+    ros_node::m_publisher_raw.publish(imu_msg_);
+
 }
