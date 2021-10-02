@@ -57,7 +57,7 @@ ros_node::ros_node(std::shared_ptr<driver> driver, int argc, char **argv)
         ros_node::m_driver->p_gyro_fsr(static_cast<driver::gyro_fsr_type>(param_gyro_fsr));
         ros_node::m_driver->p_accel_fsr(static_cast<driver::accel_fsr_type>(param_accel_fsr));
         loop_timer_ = ros_node::m_node->createTimer(ros::Duration(1 / param_max_data_rate),
-                        &ros_node::m_driver->read_data, ros_node::m_driver);
+                        &ros_node::read_data, this);
         ROS_INFO_STREAM("mpu9250 driver successfully initialized on i2c bus " << param_i2c_bus << " at address 0x" << std::hex << param_i2c_address);
         ROS_INFO_STREAM("sensor data rate is " << data_rate << " hz");
     }
@@ -72,6 +72,10 @@ ros_node::ros_node(std::shared_ptr<driver> driver, int argc, char **argv)
 
     // Perform initial gyroscope calibration.
     ros_node::calibrate_gyroscope(500);
+}
+
+void ros_node::read_data(){
+    ros_node::m_driver->read_data();
 }
 
 // ROS
