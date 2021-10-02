@@ -31,7 +31,7 @@ private:
     // COMPONENTS
     /// \brief m_driver The driver instance.
     std::shared_ptr<driver> m_driver;
-
+    ros::Timer loop_timer_;
     // CALIBRATIONS
     /// \brief The accelerometer's calibration.
     calibration m_calibration_accelerometer;
