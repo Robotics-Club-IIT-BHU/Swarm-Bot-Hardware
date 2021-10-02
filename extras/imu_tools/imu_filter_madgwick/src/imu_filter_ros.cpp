@@ -48,27 +48,14 @@ ImuFilterRos::ImuFilterRos(ros::NodeHandle nh, ros::NodeHandle nh_private):
    fixed_frame_ = "odom";
   if (!nh_private_.getParam ("constant_dt", constant_dt_))
     constant_dt_ = 0.0;
+  if (!nh_private_.getParam ("remove_gravity_vector", remove_gravity_vector_))
+    remove_gravity_vector_= false;
   if (!nh_private_.getParam ("publish_debug_topics", publish_debug_topics_))
     publish_debug_topics_= false;
 
-  // For ROS Jade, make this default to true.
-  if (!nh_private_.getParam ("use_magnetic_field_msg", use_magnetic_field_msg_))
-  {
-      if (use_mag_)
-      {
-          ROS_WARN("Deprecation Warning: The parameter use_magnetic_field_msg was not set, default is 'false'.");
-          ROS_WARN("Starting with ROS Jade, use_magnetic_field_msg will default to 'true'!");
-      }
-      use_magnetic_field_msg_ = false;
-  }
-
   std::string world_frame;
-  // Default should become false for next release
-  if (!nh_private_.getParam ("world_frame", world_frame)) {
-    world_frame = "nwu";
-    ROS_WARN("Deprecation Warning: The parameter world_frame was not set, default is 'nwu'.");
-    ROS_WARN("Starting with ROS Lunar, world_frame will default to 'enu'!");
-  }
+  if (!nh_private_.getParam ("world_frame", world_frame))
+    world_frame = "enu";
 
   if (world_frame == "ned") {
     world_frame_ = WorldFrame::NED;
@@ -97,6 +84,11 @@ ImuFilterRos::ImuFilterRos(ros::NodeHandle nh, ros::NodeHandle nh_private):
   else
     ROS_INFO("Using constant dt of %f sec", constant_dt_);
 
+  if (remove_gravity_vector_)
+    ROS_INFO("The gravity vector will be removed from the acceleration");
+  else
+    ROS_INFO("The gravity vector is kept in the IMU message.");
+
   // **** register dynamic reconfigure
   config_server_.reset(new FilterConfigServer(nh_private_));
   FilterConfigServer::CallbackType f = boost::bind(&ImuFilterRos::reconfigCallback, this, _1, _2);
@@ -124,24 +116,8 @@ ImuFilterRos::ImuFilterRos(ros::NodeHandle nh, ros::NodeHandle nh_private):
 
   if (use_mag_)
   {
-    if (use_magnetic_field_msg_)
-    {
-      mag_subscriber_.reset(new MagSubscriber(
-        nh_, ros::names::resolve("imu") + "/mag", queue_size));
-    }
-    else
-    {
-      mag_subscriber_.reset(new MagSubscriber(
-        nh_, ros::names::resolve("imu") + "/magnetic_field", queue_size));
-
-      // Initialize the shim to support republishing Vector3Stamped messages from /mag as MagneticField
-      // messages on the /magnetic_field topic.
-      mag_republisher_ = nh_.advertise<MagMsg>(
-        ros::names::resolve("imu") + "/magnetic_field", 5);
-      vector_mag_subscriber_.reset(new MagVectorSubscriber(
-        nh_, ros::names::resolve("imu") + "/mag", queue_size));
-      vector_mag_subscriber_->registerCallback(&ImuFilterRos::imuMagVectorCallback, this);
-    }
+    mag_subscriber_.reset(new MagSubscriber(
+      nh_, ros::names::resolve("imu") + "/mag", queue_size));
 
     sync_.reset(new Synchronizer(
       SyncPolicy(queue_size), *imu_subscriber_, *mag_subscriber_));
@@ -173,17 +149,21 @@ void ImuFilterRos::imuCallback(const ImuMsg::ConstPtr& imu_msg_raw)
   ros::Time time = imu_msg_raw->header.stamp;
   imu_frame_ = imu_msg_raw->header.frame_id;
 
-  if (!initialized_)
-  {
-    check_topics_timer_.stop();
-    ROS_INFO("First IMU message received.");
-  }
-
   if (!initialized_ || stateless_)
   {
     geometry_msgs::Quaternion init_q;
-    StatelessOrientation::computeOrientation(world_frame_, lin_acc, init_q);
+    if (!StatelessOrientation::computeOrientation(world_frame_, lin_acc, init_q))
+    {
+      ROS_WARN_THROTTLE(5.0, "The IMU seems to be in free fall, cannot determine gravity direction!");
+      return;
+    }
     filter_.setOrientation(init_q.w, init_q.x, init_q.y, init_q.z);
+  }
+
+  if (!initialized_)
+  {
+    ROS_INFO("First IMU message received.");
+    check_topics_timer_.stop();
 
     // initialize time
     last_time_ = time;
@@ -195,7 +175,12 @@ void ImuFilterRos::imuCallback(const ImuMsg::ConstPtr& imu_msg_raw)
   if (constant_dt_ > 0.0)
     dt = constant_dt_;
   else
+  {
     dt = (time - last_time_).toSec();
+    if (time.isZero())
+      ROS_WARN_STREAM_THROTTLE(5.0, "The IMU message time stamp is zero, and the parameter constant_dt is not set!" <<
+                                    " The filter will not update the orientation.");
+  }
 
   last_time_ = time;
 
@@ -233,12 +218,6 @@ void ImuFilterRos::imuMagCallback(
   double pitch = 0.0;
   double yaw = 0.0;
 
-  if (!initialized_)
-  {
-    check_topics_timer_.stop();
-    ROS_INFO("First pair of IMU and magnetometer messages received.");
-  }
-
   if (!initialized_ || stateless_)
   {
     // wait for mag message without NaN / inf
@@ -248,9 +227,20 @@ void ImuFilterRos::imuMagCallback(
     }
 
     geometry_msgs::Quaternion init_q;
-    StatelessOrientation::computeOrientation(world_frame_, lin_acc, mag_compensated, init_q);
+    if (!StatelessOrientation::computeOrientation(world_frame_, lin_acc, mag_compensated, init_q))
+    {
+      ROS_WARN_THROTTLE(5.0, "The IMU seems to be in free fall or close to magnetic north pole, cannot determine gravity direction!");
+      return;
+    }
     filter_.setOrientation(init_q.w, init_q.x, init_q.y, init_q.z);
+  }
 
+  if (!initialized_)
+  {
+    ROS_INFO("First pair of IMU and magnetometer messages received.");
+    check_topics_timer_.stop();
+
+    // initialize time
     last_time_ = time;
     initialized_ = true;
   }
@@ -260,7 +250,12 @@ void ImuFilterRos::imuMagCallback(
   if (constant_dt_ > 0.0)
     dt = constant_dt_;
   else
+  {
     dt = (time - last_time_).toSec();
+    if (time.isZero())
+      ROS_WARN_STREAM_THROTTLE(5.0, "The IMU message time stamp is zero, and the parameter constant_dt is not set!" <<
+                                    " The filter will not update the orientation.");
+  }
 
   last_time_ = time;
 
@@ -337,6 +332,15 @@ void ImuFilterRos::publishFilteredMsg(const ImuMsg::ConstPtr& imu_msg_raw)
   imu_msg->orientation_covariance[7] = 0.0;
   imu_msg->orientation_covariance[8] = orientation_variance_;
 
+
+  if(remove_gravity_vector_) {
+    float gx, gy, gz;
+    filter_.getGravity(gx, gy, gz);
+    imu_msg->linear_acceleration.x -= gx;
+    imu_msg->linear_acceleration.y -= gy;
+    imu_msg->linear_acceleration.z -= gz;
+  }
+
   imu_publisher_.publish(imu_msg);
 
   if(publish_debug_topics_)
@@ -377,15 +381,6 @@ void ImuFilterRos::reconfigCallback(FilterConfig& config, uint32_t level)
   mag_bias_.z = config.mag_bias_z;
   orientation_variance_ = config.orientation_stddev * config.orientation_stddev;
   ROS_INFO("Magnetometer bias values: %f %f %f", mag_bias_.x, mag_bias_.y, mag_bias_.z);
-}
-
-void ImuFilterRos::imuMagVectorCallback(const MagVectorMsg::ConstPtr& mag_vector_msg)
-{
-  MagMsg mag_msg;
-  mag_msg.header = mag_vector_msg->header;
-  mag_msg.magnetic_field = mag_vector_msg->vector;
-  // leaving mag_msg.magnetic_field_covariance set to all zeros (= "covariance unknown")
-  mag_republisher_.publish(mag_msg);
 }
 
 void ImuFilterRos::checkTopicsTimerCallback(const ros::TimerEvent&)

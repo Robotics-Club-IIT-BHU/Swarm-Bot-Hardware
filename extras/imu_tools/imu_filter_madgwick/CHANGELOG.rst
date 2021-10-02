@@ -2,28 +2,66 @@
 Changelog for package imu_filter_madgwick
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.0.15 (2017-05-22)
--------------------
+1.2.3 (2021-04-09)
+------------------
+* Fix "non standard content" warning in imu_tools metapackage
+  Fixes `#135 <https://github.com/ccny-ros-pkg/imu_tools/issues/135>`_.
+* Add example launch file for imu_filter_madgwick (`#132 <https://github.com/ccny-ros-pkg/imu_tools/issues/132>`_)
+* Update maintainers in package.xml
+* Fix warnings: reordering and unused vars
+* Set cmake_policy CMP0048 to fix warning
+* Contributors: Martin Günther, pietrocolombo
+
+1.2.2 (2020-05-25)
+------------------
+* Drop the signals component of Boost (`#103 <https://github.com/ccny-ros-pkg/imu_tools/issues/103>`_)
+* Add the option to remove the gravity vector (`#101 <https://github.com/ccny-ros-pkg/imu_tools/issues/101>`_)
+* fix install path & boost linkage issues
+* Contributors: Alexis Paques, Martin Günther, Mike Purvis, Sean Yen
+
+1.2.1 (2019-05-06)
+------------------
+* Skip messages and warn if computeOrientation fails
+* Contributors: Martin Günther
+
+1.2.0 (2018-05-25)
+------------------
+* Remove outdated Makefile
+* Add warning when IMU time stamp is zero
+  Closes `#82 <https://github.com/ccny-ros-pkg/imu_tools/issues/82>`_.
+* update to use non deprecated pluginlib macro (`#77 <https://github.com/ccny-ros-pkg/imu_tools/issues/77>`_)
+* Contributors: Martin Günther, Mikael Arguedas
+
+1.1.5 (2017-05-24)
+------------------
+* Initial release into Lunar
+* Remove support for Vector3 mag messages
+* Change default world_frame = enu
+* Rewrite rosbags: Use MagneticField for magnetometer
+* Contributors: Martin Günther
+
+1.1.4 (2017-05-22)
+------------------
 * Print warning if waiting for topic
   Closes `#61 <https://github.com/ccny-ros-pkg/imu_tools/issues/61>`_.
 * Fix boost::lock_error on shutdown
 * Contributors: Martin Günther
 
-1.0.14 (2017-03-10)
--------------------
+1.1.3 (2017-03-10)
+------------------
 * Return precisely normalized quaternions
   Fixes `#67 <https://github.com/ccny-ros-pkg/imu_tools/issues/67>`_ : TF_DENORMALIZED_QUATERNION warning added in TF2 0.5.14.
 * Tests: Check that output quaternions are normalized
 * Fixed lock so it stays in scope until end of method.
-* Contributors: Jason Mercer, Martin Günther
+* Contributors: Jason Mercer, Martin Guenther, Martin Günther
 
-1.0.13 (2016-09-07)
--------------------
+1.1.2 (2016-09-07)
+------------------
 * Add missing dependency on tf2_geometry_msgs
 * Contributors: Martin Guenther
 
-1.0.12 (2016-09-07)
--------------------
+1.1.1 (2016-09-07)
+------------------
 * Add parameter "world_frame": optionally use ENU or NED instead of NWU
   convention (from `#60 <https://github.com/ccny-ros-pkg/imu_tools/issues/60>`_;
   closes `#36 <https://github.com/ccny-ros-pkg/imu_tools/issues/36>`_)
@@ -38,6 +76,14 @@ Changelog for package imu_filter_madgwick
   optimizations to improve readability)
 * Add unit tests
 * Contributors: Martin Guenther, Michael Stoll
+
+1.1.0 (2016-04-25)
+------------------
+
+1.0.11 (2016-04-22)
+-------------------
+* Jade: Change default: use_magnetic_field_msg = true
+* Contributors: Martin Guenther
 
 1.0.10 (2016-04-22)
 -------------------
