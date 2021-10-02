@@ -233,7 +233,7 @@ class OmniDriver{
     private:
 
     public:
-        OmniDriver(){
+        OmniDriver(ros::NodeHandle* n){
 
 #ifndef __PI_WIRING_SET__
 #define __PI_WIRING_SET__
@@ -246,9 +246,25 @@ class OmniDriver{
             int bp = getenv("BP")?atoi(getenv("BP")):pi_6, bn = getenv("BN")?atoi(getenv("BN")):pi_5, benb = getenv("BENB")?atoi(getenv("BENB")):pi_12;
             int bencp = getenv("BENCP")?atoi(getenv("BENCP")):pi_11, bencn = getenv("BENCN")?atoi(getenv("BENCN")):pi_26;
 
-            l = new Motor(lp, ln, lenb, lencp, lencn, 5.0, 1.0, 0.01);
-            r = new Motor(rp, rn, renb, rencp, rencn, 5.0, 1.0, 0.01);
-            b = new Motor(bp, bn, benb, bencp, bencn, 5.0, 1.0, 0.01);
+            double l_kp=5.0, r_kp=5.0, b_kp=5.0;
+            double l_kd=1.0, r_kd=1.0, b_kd=1.0;
+            double l_ki=0.01, r_ki=0.01, b_ki=0.01; 
+
+            n->getParam("pd_gains/prop_gain/l_p_gain", l_kp);
+            n->getParam("pd_gains/prop_gain/r_p_gain", r_kp);
+            n->getParam("pd_gains/prop_gain/b_p_gain", b_kp);
+
+            n->getParam("pd_gains/prop_gain/l_d_gain", l_kd);
+            n->getParam("pd_gains/prop_gain/r_d_gain", r_kd);
+            n->getParam("pd_gains/prop_gain/b_d_gain", b_kd);
+
+            n->getParam("pd_gains/prop_gain/l_i_gain", l_kp);
+            n->getParam("pd_gains/prop_gain/r_i_gain", r_kp);
+            n->getParam("pd_gains/prop_gain/b_i_gain", b_kp);
+
+            l = new Motor(lp, ln, lenb, lencp, lencn, l_kp, l_kd, l_ki);
+            r = new Motor(rp, rn, renb, rencp, rencn, r_kp, r_kd, r_ki);
+            b = new Motor(bp, bn, benb, bencp, bencn, b_kp, r_kd, b_ki);
             
             wiringPiISR(l->motor_encA, INT_EDGE_BOTH, updateEncoderL);
             wiringPiISR(l->motor_encB, INT_EDGE_BOTH, updateEncoderL);
@@ -282,7 +298,7 @@ int main(int argc, char** argv){
     ros::Rate rate(hz);
     double dt_ = 1.0/hz;
     OmniDriver* div;
-    div = new OmniDriver();
+    div = new OmniDriver(&n);
 
     cmd_vel_sub = n.subscribe("/cmd_vel", 1000, velocity_callback);
     imu_sub = n.subscribe("imu", 100, imu_callback);

@@ -1,0 +1,14 @@
+prop_gain:
+  l_p_gain: 5.0
+  r_p_gain: 5.0
+  b_p_gain: 5.0  
+
+diff_gain:
+  l_d_gain: 1.0
+  r_d_gain: 1.0
+  b_d_gain: 1.0
+
+inte_gain:
+  l_i_gain: 0.01
+  r_i_gain: 0.01
+  b_i_gain: 0.01
