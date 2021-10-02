@@ -1,6 +1,5 @@
 #!/usr/bin/env python
  
-
 import rospy
 from geometry_msgs.msg import Point
 
@@ -12,7 +11,8 @@ factory = None
 servo1 = None
 servo2 = None
 
-
+new_goal = False
+	
 m = 0.5
 
 val1=-m
