@@ -22,7 +22,7 @@ ros_node::ros_node(std::shared_ptr<driver> driver, int argc, char **argv)
     ros::init(argc, argv, "driver_mpu9250");
 
     // Get the node's handle.
-    ros_node::m_node = std::make_shared<ros::NodeHandle>();
+    ros_node::m_node = std::make_shared<ros::NodeHandle>("");
 
     // Read parameters.
     ros::NodeHandle private_node("~");
