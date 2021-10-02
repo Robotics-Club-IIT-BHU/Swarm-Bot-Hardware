@@ -1,6 +1,8 @@
 <launch>
     <group ns="$(env ROS_DEVICE_NAME)">
         <node name="omni_drive" pkg="dot_hardware" type="omnidrive" output="screen" />
+        <node name="imu_driver_node" pkg="driver_mpu9250" type="driver_mpu9250_rpi" output="screen"/>
+        <include file="$(find imu_filter_madgwick)/launch/imu_filter_madgwick.launch"/>
     </group>
     
 </launch>
