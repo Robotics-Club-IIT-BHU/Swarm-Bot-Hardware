@@ -168,7 +168,6 @@ void ros_node::data_callback(driver::data data)
 {
     // Create accelerometer message.
     //sensor_msgs_ext::accelerometer message_accel;
-    std::cout<<"Hello received data\n";
     sensor_msgs::Imu imu_msg_;
     // Set accelerations (convert from g's to m/s^2)
     imu_msg_.linear_acceleration.x = static_cast<double>(data.accel_x) * 9.80665;
@@ -218,6 +217,9 @@ void ros_node::data_callback(driver::data data)
     // message_temp.temperature = static_cast<double>(data.temp);
     // // Publish temperature message.
     // ros_node::m_publisher_temperature.publish(message_temp);
+    imu_msg_.header.frame_id = "base_link";
+    imu_msg_.header.stamp = ros::Time::now();
+
     ros_node::m_publisher_raw.publish(imu_msg_);
 
 }
