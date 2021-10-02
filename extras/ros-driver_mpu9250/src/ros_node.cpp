@@ -27,7 +27,7 @@ ros_node::ros_node(std::shared_ptr<driver> driver, int argc, char **argv)
     // Read parameters.
     ros::NodeHandle private_node("~");
     int param_i2c_bus = private_node.param<int>("i2c_bus", 1);
-    int param_i2c_address = private_node.param<int>("i2c_address", 0x71);
+    int param_i2c_address = private_node.param<int>("i2c_address", 0x0c);
     int param_interrupt_pin = private_node.param<int>("interrupt_gpio_pin", 0);
     int param_gyro_dlpf_frequency = private_node.param<int>("gyro_dlpf_frequency", 0);
     int param_accel_dlpf_frequency = private_node.param<int>("accel_dlpf_frequency", 0);
