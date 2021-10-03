@@ -346,9 +346,9 @@ int main(int argc, char** argv){
         v3 = (L * wmp - (vmx / 2) + (sqrt3by2 * vmy));
 
         v1=v2=v3=1;
-        wheel_.lpos = wheel_.lpos + l_w_dir*wheel_speed*v1*dt_/R;
-        wheel_.bpos = wheel_.bpos + b_w_dir*wheel_speed*v2*dt_/R;
-        wheel_.rpos = wheel_.rpos + r_w_dir*wheel_speed*v3*dt_/R;
+        wheel_.lpos = wheel_.lpos + div->l_w_dir*wheel_speed*v1*dt_/R;
+        wheel_.bpos = wheel_.bpos + div->b_w_dir*wheel_speed*v2*dt_/R;
+        wheel_.rpos = wheel_.rpos + div->r_w_dir*wheel_speed*v3*dt_/R;
 
         l->set(wheel_.lpos);
         r->set(wheel_.rpos);
