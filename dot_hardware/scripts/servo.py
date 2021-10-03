@@ -18,8 +18,8 @@ m = 0.5
 val1=-m
 val2=0
 
-d1 = 0.005
-d2 = 0.005
+d1 = 0.001
+d2 = 0.001
 
 p = Point()
 p.x = 0
@@ -64,16 +64,19 @@ def main_loop():
 				servo2.value = v2
 				#new_goal = False
 			else: 
-				val1+=d1
-				val2+=d2
-				if(val1>=m or val1<=(-m)):
-					d1*=-1
-				else:
-					servo1.value = val1
-				if(val2>=m or val2<=(-m)):
-					d2*=-1
-				else:
-					servo2.value = val2
+# 				val1+=d1
+# 				val2+=d2
+# 				if(val1>=m or val1<=(-m)):
+# 					d1*=-1
+# 				else:
+# 					servo1.value = val1
+# 				if(val2>=m or val2<=(-m)):
+# 					d2*=-1
+# 				else:
+# 					servo2.value = val2
+				servo1.value = 0
+				servo2.value = 0
+
 			rate.sleep()
 		except rospy.ROSInterruptException:
 			rospy.logerr("Shutting Down Servo Server")
