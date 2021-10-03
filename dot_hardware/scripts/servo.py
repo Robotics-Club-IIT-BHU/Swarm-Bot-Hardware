@@ -28,6 +28,7 @@ p.z = 0
 
 def instruct_callback(msg):
 	global p
+	print("new_Data")
 	p = msg
 	p.z = 0
 	mag = math.sqrt(p.x**2 + p.y**2)
@@ -57,7 +58,7 @@ def main_loop():
 	global factory, servo1, servo2, p, m, val1, val2, d1, d2
 
 	rate = rospy.Rate(50)
-	while not rospy.is_shutdown():
+	while True or not rospy.is_shutdown():
 		print("I am in loop")
 		try:
 			if new_goal:
@@ -78,7 +79,7 @@ def main_loop():
 # 					servo2.value = val2
 				servo1.value = 0
 				servo2.value = 0
-			rospy.spin()
+			
 			rate.sleep()
 		except rospy.ROSInterruptException:
 			rospy.logerr("Shutting Down Servo Server")
@@ -87,7 +88,7 @@ def main_loop():
 	
 	servo1.detach()
 	servo2.detach()
-
+	rospy.spin()
 if __name__ == "__main__":
 	rospy.init_node('servo_server', anonymous=True)
 
