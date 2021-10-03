@@ -42,8 +42,8 @@ def instruct_callback(msg):
 def coor2ang(x, y):
 	x = min(max(x, -1.5), 1.5)
 	y = min(max(y, -1.5), 1.5)
-	ang1 = sin(x)
-	ang2 = sin(y)
+	ang1 = math.sin(x)
+	ang2 = math.sin(y)
 	return ang1, ang2
 
 def init():
