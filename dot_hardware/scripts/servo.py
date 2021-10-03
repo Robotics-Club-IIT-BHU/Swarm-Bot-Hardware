@@ -7,37 +7,8 @@ import math
 from gpiozero import Servo
 from gpiozero.pins.pigpio import PiGPIOFactory
 
-factory = None
-servo1 = None
-servo2 = None
+serObj = None
 
-new_goal = False
-	
-m = 0.5
-
-val1=-m
-val2=0
-
-d1 = 0.001
-d2 = 0.001
-
-p = Point()
-p.x = 0
-p.y = 0
-p.z = 0
-
-def instruct_callback(msg):
-	global p, new_goal
-	print("new_Data")
-	p = msg
-	p.z = 0
-	mag = math.sqrt(p.x**2 + p.y**2)
-	if mag < 0.1: ## check this parameter carefully
-		new_goal = False
-	else: 
-		new_goal = True
-	p.x /= mag
-	p.y /= mag
 	
 def coor2ang(x, y):
 	x = min(max(x, -1.5), 1.5)
@@ -46,12 +17,55 @@ def coor2ang(x, y):
 	ang2 = math.sin(y)
 	return ang1, ang2
 
+class ServoControlRos:
+	m = 0.5
+	d1 = 0.001
+	d2 = 0.001
+	new_goal = False
+	def __init__(pi_shift=False):
+		self.p = Point()
+		self.factory = PiGPIOFactory()
+		self.servo1 = Servo(14, initial_value=0, pin_factory=factory)
+		self.servo2 = Servo(15, initial_value=0, pin_factory=factory)		
+		if pi_shift:
+			self.val1 = -self.m
+		else:
+			self.val1 = 0
+		self.val2 = 0
+		self.tar1 = self.val1
+		self.tar2 = self.val2
+
+	def setTarget(x,y):
+		self.tar1, self.tar2 = coor2ang(x, y)
+	def control():
+		self.val1 = 0.8*self.val1 + 0.2*self.tar1
+		self.val2 = 0.8*self.val2 + 0.2*self.tar2
+		self.servo1.value = self.val1
+		self.servo2.value = self.val2
+	def reached():
+		if(abs(self.tar1-self.val1) + abs(self.tar2-self.val2))<0.05:
+			return True
+		else:
+			return False
+
+def instruct_callback(msg):
+	global serObj
+	print("new_Data")
+	serObj.p = msg
+	serObj.p.z = 0
+	mag = math.sqrt(serObj.p.x**2 + serObj.p.y**2)
+	if mag < 0.1: ## check this parameter carefully
+		serObj.new_goal = False
+	else: 
+		serObj.new_goal = True
+	serObj.p.x /= mag
+	serObj.p.y /= mag
+
+
 def init():
 	global factory, servo1, servo2
 
-	factory = factory or PiGPIOFactory()
-	servo1 = servo1 or Servo(14, initial_value=0, pin_factory=factory)
-	servo2 = servo2 or Servo(15, initial_value=0, pin_factory=factory)
+
 
 
 def main_loop():
@@ -61,11 +75,11 @@ def main_loop():
 	while True or not rospy.is_shutdown():
 		print("I am in loop")
 		try:
-			if new_goal:
-				v1, v2 = coor2ang(p.x, p.y)
-				servo1.value = v1
-				servo2.value = v2
-				#new_goal = False
+			if serObj.new_goal:
+				serObj.setTarget(x,y)
+				serObj.control()
+				if(serObj.is_reached()):
+					serObj.new_goal = False
 			else: 
 # 				val1+=d1
 # 				val2+=d2
@@ -77,8 +91,8 @@ def main_loop():
 # 					d2*=-1
 # 				else:
 # 					servo2.value = val2
-				servo1.value = 0
-				servo2.value = 0
+				serObj.setTarget(0,0)
+				serObj.control()
 			
 			rate.sleep()
 		except rospy.ROSInterruptException:
