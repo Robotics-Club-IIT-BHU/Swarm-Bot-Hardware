@@ -1,7 +1,7 @@
 prop_gain:
-  l_p_gain: 6.0
-  r_p_gain: 6.0
-  b_p_gain: 6.0  
+  l_p_gain: 4.0
+  r_p_gain: 4.0
+  b_p_gain: 4.0  
 
 diff_gain:
   l_d_gain: 0.5
