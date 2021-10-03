@@ -22,7 +22,7 @@ class ServoControlRos:
 	d1 = 0.001
 	d2 = 0.001
 	new_goal = False
-	def __init__(pi_shift=False):
+	def __init__(self,pi_shift=False):
 		self.p = Point()
 		self.factory = PiGPIOFactory()
 		self.servo1 = Servo(14, initial_value=0, pin_factory=factory)
@@ -35,14 +35,14 @@ class ServoControlRos:
 		self.tar1 = self.val1
 		self.tar2 = self.val2
 
-	def setTarget(x,y):
+	def setTarget(self,x,y):
 		self.tar1, self.tar2 = coor2ang(x, y)
-	def control():
+	def control(self):
 		self.val1 = 0.8*self.val1 + 0.2*self.tar1
 		self.val2 = 0.8*self.val2 + 0.2*self.tar2
 		self.servo1.value = self.val1
 		self.servo2.value = self.val2
-	def reached():
+	def reached(self):
 		if(abs(self.tar1-self.val1) + abs(self.tar2-self.val2))<0.05:
 			return True
 		else:
