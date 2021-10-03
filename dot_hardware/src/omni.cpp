@@ -233,6 +233,7 @@ class OmniDriver{
     private:
 
     public:
+        double l_w_dir=1, b_w_dir=1, r_w_dir=1;
         OmniDriver(ros::NodeHandle* n){
 
 #ifndef __PI_WIRING_SET__
@@ -254,13 +255,17 @@ class OmniDriver{
             n->getParam("pd_gains/prop_gain/r_p_gain", r_kp);
             n->getParam("pd_gains/prop_gain/b_p_gain", b_kp);
 
-            n->getParam("pd_gains/prop_gain/l_d_gain", l_kd);
-            n->getParam("pd_gains/prop_gain/r_d_gain", r_kd);
-            n->getParam("pd_gains/prop_gain/b_d_gain", b_kd);
+            n->getParam("pd_gains/diff_gain/l_d_gain", l_kd);
+            n->getParam("pd_gains/diff_gain/r_d_gain", r_kd);
+            n->getParam("pd_gains/diff_gain/b_d_gain", b_kd);
 
-            n->getParam("pd_gains/prop_gain/l_i_gain", l_kp);
-            n->getParam("pd_gains/prop_gain/r_i_gain", r_kp);
-            n->getParam("pd_gains/prop_gain/b_i_gain", b_kp);
+            n->getParam("pd_gains/inte_gain/l_i_gain", l_ki);
+            n->getParam("pd_gains/inte_gain/r_i_gain", r_ki);
+            n->getParam("pd_gains/inte_gain/b_i_gain", b_ki);
+
+            n->getParam("wheel_dir/l_wheel_dir", l_w_dir);
+            n->getParam("wheel_dir/r_wheel_dir", r_w_dir);
+            n->getParam("wheel_dir/b_wheel_dir", b_w_dir);
 
             l = new Motor(lp, ln, lenb, lencp, lencn, l_kp, l_kd, l_ki);
             r = new Motor(rp, rn, renb, rencp, rencn, r_kp, r_kd, r_ki);
@@ -341,9 +346,9 @@ int main(int argc, char** argv){
         v3 = (L * wmp - (vmx / 2) + (sqrt3by2 * vmy));
 
         v1=v2=v3=1;
-        wheel_.lpos = wheel_.lpos + wheel_speed*v1*dt_/R;
-        wheel_.bpos = wheel_.bpos + wheel_speed*v2*dt_/R;
-        wheel_.rpos = wheel_.rpos + wheel_speed*v3*dt_/R;
+        wheel_.lpos = wheel_.lpos + l_w_dir*wheel_speed*v1*dt_/R;
+        wheel_.bpos = wheel_.bpos + b_w_dir*wheel_speed*v2*dt_/R;
+        wheel_.rpos = wheel_.rpos + r_w_dir*wheel_speed*v3*dt_/R;
 
         l->set(wheel_.lpos);
         r->set(wheel_.rpos);
