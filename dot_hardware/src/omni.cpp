@@ -340,7 +340,7 @@ int main(int argc, char** argv){
         v2 = (vmx + L * wmp);
         v3 = (L * wmp - (vmx / 2) + (sqrt3by2 * vmy));
 
-    
+        v1=v2=v3=1;
         wheel_.lpos = wheel_.lpos + wheel_speed*v1*dt_/R;
         wheel_.bpos = wheel_.bpos + wheel_speed*v2*dt_/R;
         wheel_.rpos = wheel_.rpos + wheel_speed*v3*dt_/R;
