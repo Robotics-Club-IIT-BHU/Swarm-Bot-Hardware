@@ -95,9 +95,9 @@ def main_loop():
 		except rospy.ROSTimeMovedBackwardsException:
 			rospy.logerr("Here goes time")
 	
-	servo1.detach()
-	servo2.detach()
-	rospy.spin()
+	serObj.servo1.detach()
+	serObj.servo2.detach()
+	
 if __name__ == "__main__":
 	rospy.init_node('servo_server', anonymous=True)
 
