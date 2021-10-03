@@ -42,7 +42,7 @@ class ServoControlRos:
 		self.val2 = 0.8*self.val2 + 0.2*self.tar2
 		self.servo1.value = self.val1
 		self.servo2.value = self.val2
-	def reached(self):
+	def is_reached(self):
 		if(abs(self.tar1-self.val1) + abs(self.tar2-self.val2))<0.05:
 			return True
 		else:
