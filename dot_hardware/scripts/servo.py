@@ -27,6 +27,7 @@ p.y = 0
 p.z = 0
 
 def instruct_callback(msg):
+	global p
 	p = msg
 	p.z = 0
 	mag = math.sqrt(p.x**2 + p.y**2)
