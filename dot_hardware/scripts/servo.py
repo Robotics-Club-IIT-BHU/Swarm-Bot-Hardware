@@ -58,6 +58,7 @@ def main_loop():
 
 	rate = rospy.Rate(50)
 	while not rospy.is_shutdown():
+		print("I am in loop")
 		try:
 			if new_goal:
 				v1, v2 = coor2ang(p.x, p.y)
@@ -77,7 +78,7 @@ def main_loop():
 # 					servo2.value = val2
 				servo1.value = 0
 				servo2.value = 0
-
+			rospy.spin()
 			rate.sleep()
 		except rospy.ROSInterruptException:
 			rospy.logerr("Shutting Down Servo Server")
