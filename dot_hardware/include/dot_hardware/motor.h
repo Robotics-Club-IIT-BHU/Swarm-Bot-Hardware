@@ -75,6 +75,7 @@ class Motor{
         int control(void);
         double read();
         void set(long double);
+        void clear();
         //void updateEncoder();
 };
 Motor::Motor(int p, int n, int e, int a, int b, double Kp, double Kd, double Ki):m_effort(90){
@@ -117,6 +118,11 @@ void Motor::set(long double target){
     pid_obj->set(pos_in_int);
 }
 Motor::~Motor(){
+    digitalWrite(motor_p, LOW);
+    digitalWrite(motor_n, LOW);
+    softPwmWrite(motor_e, 0);   
+}
+void Motor::clear(){
     digitalWrite(motor_p, LOW);
     digitalWrite(motor_n, LOW);
     softPwmWrite(motor_e, 0);   

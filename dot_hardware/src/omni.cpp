@@ -355,6 +355,9 @@ int main(int argc, char** argv){
         rate.sleep();
         
     }
+    l->clear();
+    r->clear();
+    b->clear();
     free(l);
     free(r);
     free(b);
