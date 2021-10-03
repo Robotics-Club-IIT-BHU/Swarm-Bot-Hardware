@@ -35,9 +35,9 @@ ros::Subscriber imu_sub, cmd_vel_sub;
 
 bool imu_flag=true;
 double yaw_offset = 0;
-double vx;
-double vy;
-double wp;
+double vx=0;
+double vy=0;
+double wp=0;
 
 struct Wheel{
     double lpos;
@@ -293,7 +293,7 @@ int main(int argc, char** argv){
     ros::NodeHandle n("");
     timePrevious = ros::Time::now();
     int debug = getenv("DEBUG")?atoi(getenv("DEBUG")):0;
-
+    double wheel_speed = getenv("WSP")?atoi(getenv("WSP")):10;
     double hz=100;
     ros::Rate rate(hz);
     double dt_ = 1.0/hz;
@@ -307,19 +307,19 @@ int main(int argc, char** argv){
     long int i = 0;
 
     while(ros::ok()){
-        if(debug){
-            i++;
-            i/=100000;
-            if((i/1000)%2==0){
-                std::cout<<"x\n";
-                vx = 0.1;
-                vy = 0;
-            } else {
-                std::cout<<"y\n";
-                vy = 0.1;
-                vx = 0;
-            }
-        }
+        // if(debug){
+        //     i++;
+        //     i/=100000;
+        //     if((i/1000)%2==0){
+        //         std::cout<<"x\n";
+        //         vx = 0.1;
+        //         vy = 0;
+        //     } else {
+        //         std::cout<<"y\n";
+        //         vy = 0.1;
+        //         vx = 0;
+        //     }
+        // }
 
         double read[3];
         div->readings(read);
@@ -341,9 +341,9 @@ int main(int argc, char** argv){
         v3 = (L * wmp - (vmx / 2) + (sqrt3by2 * vmy));
 
     
-        wheel_.lpos = wheel_.lpos + 20*v1*dt_/R;
-        wheel_.bpos = wheel_.bpos + 20*v2*dt_/R;
-        wheel_.rpos = wheel_.rpos + 20*v3*dt_/R;
+        wheel_.lpos = wheel_.lpos + wheel_speed*v1*dt_/R;
+        wheel_.bpos = wheel_.bpos + wheel_speed*v2*dt_/R;
+        wheel_.rpos = wheel_.rpos + wheel_speed*v3*dt_/R;
 
         l->set(wheel_.lpos);
         r->set(wheel_.rpos);
