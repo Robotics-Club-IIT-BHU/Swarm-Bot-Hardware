@@ -251,21 +251,21 @@ class OmniDriver{
             double l_kd=1.0, r_kd=1.0, b_kd=1.0;
             double l_ki=0.01, r_ki=0.01, b_ki=0.01; 
 
-            n->getParam("pd_gains/prop_gain/l_p_gain", l_kp);
-            n->getParam("pd_gains/prop_gain/r_p_gain", r_kp);
-            n->getParam("pd_gains/prop_gain/b_p_gain", b_kp);
+            n->getParam("prop_gain/l_p_gain", l_kp);
+            n->getParam("prop_gain/r_p_gain", r_kp);
+            n->getParam("prop_gain/b_p_gain", b_kp);
 
-            n->getParam("pd_gains/diff_gain/l_d_gain", l_kd);
-            n->getParam("pd_gains/diff_gain/r_d_gain", r_kd);
-            n->getParam("pd_gains/diff_gain/b_d_gain", b_kd);
+            n->getParam("diff_gain/l_d_gain", l_kd);
+            n->getParam("diff_gain/r_d_gain", r_kd);
+            n->getParam("diff_gain/b_d_gain", b_kd);
 
-            n->getParam("pd_gains/inte_gain/l_i_gain", l_ki);
-            n->getParam("pd_gains/inte_gain/r_i_gain", r_ki);
-            n->getParam("pd_gains/inte_gain/b_i_gain", b_ki);
+            n->getParam("inte_gain/l_i_gain", l_ki);
+            n->getParam("inte_gain/r_i_gain", r_ki);
+            n->getParam("inte_gain/b_i_gain", b_ki);
 
-            n->getParam("wheel_dir/l_wheel_dir", l_w_dir);
-            n->getParam("wheel_dir/r_wheel_dir", r_w_dir);
-            n->getParam("wheel_dir/b_wheel_dir", b_w_dir);
+            n->getParam("l_wheel_dir", l_w_dir);
+            n->getParam("r_wheel_dir", r_w_dir);
+            n->getParam("b_wheel_dir", b_w_dir);
 
             l = new Motor(lp, ln, lenb, lencp, lencn, l_kp, l_kd, l_ki);
             r = new Motor(rp, rn, renb, rencp, rencn, r_kp, r_kd, r_ki);
