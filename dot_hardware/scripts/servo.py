@@ -62,14 +62,9 @@ def instruct_callback(msg):
 	serObj.p.y /= mag
 
 
-def init():
-	global factory, servo1, servo2
-
-
-
 
 def main_loop():
-	global factory, servo1, servo2, p, m, val1, val2, d1, d2, new_goal
+	global serObj
 
 	rate = rospy.Rate(50)
 	while True or not rospy.is_shutdown():
@@ -106,6 +101,6 @@ def main_loop():
 if __name__ == "__main__":
 	rospy.init_node('servo_server', anonymous=True)
 
-	init()
+	serObj = ServoControlRos()
 	rospy.Subscriber("servo_dir", Point, instruct_callback )
 	main_loop()
