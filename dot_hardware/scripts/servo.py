@@ -25,8 +25,8 @@ class ServoControlRos:
 	def __init__(self,pi_shift=False):
 		self.p = Point()
 		self.factory = PiGPIOFactory()
-		self.servo1 = Servo(14, initial_value=0, pin_factory=factory)
-		self.servo2 = Servo(15, initial_value=0, pin_factory=factory)		
+		self.servo1 = Servo(14, initial_value=0, pin_factory=self.factory)
+		self.servo2 = Servo(15, initial_value=0, pin_factory=self.factory)		
 		if pi_shift:
 			self.val1 = -self.m
 		else:
