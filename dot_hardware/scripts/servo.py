@@ -11,15 +11,15 @@ factory = None
 servo1 = None
 servo2 = None
 
-new_goal = True
+new_goal = False
 	
 m = 0.5
 
 val1=-m
 val2=0
 
-d1 = 0.005
-d2 = 0.005
+d1 = 0.001
+d2 = 0.001
 
 p = Point()
 p.x = 0
