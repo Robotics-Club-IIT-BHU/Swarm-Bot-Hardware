@@ -71,7 +71,7 @@ def main_loop():
 		#print("I am in loop")
 		try:
 			if serObj.new_goal:
-				serObj.setTarget(x,y)
+				serObj.setTarget(serObj.p.x,serObj.p.y)
 				serObj.control()
 				if(serObj.is_reached()):
 					serObj.new_goal = False
