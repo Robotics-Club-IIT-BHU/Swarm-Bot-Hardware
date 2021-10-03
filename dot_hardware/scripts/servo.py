@@ -27,7 +27,7 @@ p.y = 0
 p.z = 0
 
 def instruct_callback(msg):
-	global p
+	global p, new_goal
 	print("new_Data")
 	p = msg
 	p.z = 0
@@ -55,7 +55,7 @@ def init():
 
 
 def main_loop():
-	global factory, servo1, servo2, p, m, val1, val2, d1, d2
+	global factory, servo1, servo2, p, m, val1, val2, d1, d2, new_goal
 
 	rate = rospy.Rate(50)
 	while True or not rospy.is_shutdown():
