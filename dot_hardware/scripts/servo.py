@@ -67,7 +67,7 @@ def main_loop():
 	global serObj
 
 	rate = rospy.Rate(50)
-	while True or not rospy.is_shutdown():
+	while not rospy.is_shutdown():
 		#print("I am in loop")
 		try:
 			if serObj.new_goal:
