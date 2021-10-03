@@ -11,7 +11,7 @@ factory = None
 servo1 = None
 servo2 = None
 
-new_goal = False
+new_goal = True
 	
 m = 0.5
 
