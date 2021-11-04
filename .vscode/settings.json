@@ -3,5 +3,9 @@
         "/home/hexplex0xff/champ_ws/devel/lib/python2.7/dist-packages",
         "/home/hexplex0xff/catkin_ws/devel/lib/python2.7/dist-packages",
         "/opt/ros/melodic/lib/python2.7/dist-packages"
-    ]
+    ],
+    "files.associations": {
+        "unordered_map": "cpp",
+        "unordered_set": "cpp"
+    }
 }
