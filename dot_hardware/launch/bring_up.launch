@@ -1,7 +1,7 @@
 <launch>
     <group ns="$(env ROS_DEVICE_NAME)">
         <node name="mc_connect" pkg="rosserial_arduino" type="serial_node.py">
-            <param name="port" value="/dev/serial1" />
+            <param name="port" value="/dev/ttyAMA0" />
             <param name="baud" value="230400" />
         </node>
         <!-- <rosparam command="load" file="$(find dot_hardware)/config/pd_gains/pd_gains.yaml"/> -->

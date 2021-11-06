@@ -77,7 +77,9 @@ double Motor::read(long val=-INT_MAX){
 }
 
 int Motor::control(){
-    double val = prev_inp + 257*pid_obj->compute(this->curr_vel);
+    double val = 257*pid_obj->compute(this->curr_vel);
+    if(abs(val)<257*5) return -1;
+    val += prev_inp;
     prev_inp = val;
     //std::cout<<val<<"\n";  
     if(abs(val)<257*20){

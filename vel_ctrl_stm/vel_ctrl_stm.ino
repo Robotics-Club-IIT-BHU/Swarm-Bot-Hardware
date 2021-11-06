@@ -151,9 +151,9 @@ void setup() {
   for(int i=0; i<3;i++)
     jnt_st.effort[i] = 0;
   
-  l = new Motor(LMOTOR_P, LMOTOR_N, LMOTOR_M, LMOTOR_ENCA, LMOTOR_ENCB, 50, 100, 0);
-  r = new Motor(RMOTOR_P, RMOTOR_N, RMOTOR_M, RMOTOR_ENCA, RMOTOR_ENCB, 50, 100, 0);
-  b = new Motor(BMOTOR_P, BMOTOR_N, BMOTOR_M, BMOTOR_ENCA, BMOTOR_ENCB, 50, 100, 0);
+  l = new Motor(LMOTOR_P, LMOTOR_N, LMOTOR_M, LMOTOR_ENCA, LMOTOR_ENCB, 10, 0, 0);
+  r = new Motor(RMOTOR_P, RMOTOR_N, RMOTOR_M, RMOTOR_ENCA, RMOTOR_ENCB, 10, 0, 0);
+  b = new Motor(BMOTOR_P, BMOTOR_N, BMOTOR_M, BMOTOR_ENCA, BMOTOR_ENCB, 10, 0, 0);
   
   pinMode(l->motor_encA, INPUT);
   pinMode(l->motor_encB, INPUT);
@@ -170,9 +170,9 @@ void setup() {
   pinMode(r->motor_p, OUTPUT);
   pinMode(r->motor_n, OUTPUT);
   pinMode(r->motor_e, OUTPUT);
-  digitalWrite(l->motor_p, HIGH);
-  digitalWrite(l->motor_n, LOW);
-  analogWrite(l->motor_e, 63350);
+  // digitalWrite(l->motor_p, HIGH);
+  // digitalWrite(l->motor_n, LOW);
+  // analogWrite(l->motor_e, 63350);
   attachInterrupt(digitalPinToInterrupt(l->motor_encA), updateEncoderL, CHANGE);
   attachInterrupt(digitalPinToInterrupt(l->motor_encB), updateEncoderL, CHANGE);
   attachInterrupt(digitalPinToInterrupt(b->motor_encA), updateEncoderB, CHANGE);
