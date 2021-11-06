@@ -37,6 +37,7 @@ class Motor{
         long pos;
         long prev_pos;
         double curr_vel;
+        double prev_inp;
         int inter_val;
         long set_target;
         long unsigned int prev_check;
@@ -61,6 +62,7 @@ Motor::Motor(int p, int n, int e, int a, int b, double Kp, double Kd, double Ki)
     prev_pos = 0;
     curr_vel = 0;
     inter_val=0;
+    prev_inp = 0;
 //    pinMode(motor_p, OUTPUT);
 //    pinMode(motor_n, OUTPUT);
     // softPwmCreate(motor_e, 0, 100);
@@ -75,9 +77,10 @@ double Motor::read(long val=-INT_MAX){
 }
 
 int Motor::control(){
-    double val = 655530; //257*pid_obj->compute(this->curr_vel);
+    double val = prev_inp + 257*pid_obj->compute(this->curr_vel);
+    prev_inp = val;
     //std::cout<<val<<"\n";  
-    if(abs(val)<257*5){
+    if(abs(val)<257*20){
         digitalWrite(motor_p, LOW);
         digitalWrite(motor_n, LOW);
         analogWrite(motor_e, 0);

@@ -50,7 +50,7 @@ class ServoControlRos:
 
 def instruct_callback(msg):
 	global serObj
-	print("new_Data")
+	# print("new_Data")
 	serObj.p = msg
 	serObj.p.z = 0
 	mag = math.sqrt(serObj.p.x**2 + serObj.p.y**2)

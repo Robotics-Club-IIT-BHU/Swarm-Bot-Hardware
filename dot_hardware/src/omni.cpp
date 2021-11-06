@@ -1,11 +1,11 @@
-#include "dot_hardware/motor.h"
-#include <wiringPi.h>
 #include <unistd.h>
 #include <ros/ros.h>
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/Pose.h>
 #include <geometry_msgs/Quaternion.h>
 #include <nav_msgs/Odometry.h>
+#include <sensor_msgs/JointState.h>
+#include <std_msgs/Float64.h>
 #include <tf/transform_broadcaster.h>
 #include <tf/tf.h>
 #include <geometry_msgs/TransformStamped.h>
@@ -24,14 +24,13 @@
 #define L_IND 0
 #define R_IND 1
 #define B_IND 2
-Motor* l;
-Motor* r;
-Motor* b;
+
 
 ros::Time timeCurrent;
 ros::Time timePrevious;
 ros::Publisher pub_;
-ros::Subscriber imu_sub, cmd_vel_sub;
+ros::Subscriber imu_sub, cmd_vel_sub, jnt_sub;
+ros::Publisher l_pub_, r_pub_, b_pub_;
 
 bool imu_flag=true;
 double yaw_offset = 0;
@@ -40,9 +39,12 @@ double vy=0;
 double wp=0;
 
 struct Wheel{
-    double lpos;
-    double rpos;
-    double bpos;
+    double l_theta;
+    double l_theta_dot;
+    double r_theta;
+    double r_theta_dot;
+    double b_theta;
+    double b_theta_dot;
 } wheel_;
 
 struct Pose{
@@ -57,15 +59,38 @@ struct Odom{
     double x;
     double y;
     double theta;
+    double vx;
+    double vy;
+    double wx;
 } odom_;
 
-void updateAndOdom(double* read){
+void jnt_state_callback(const sensor_msgs::JointState &msg){
+    double jnt_vel;
+    for(int i=0;i<3;i++){
+        if(msg.name[i][0]=='l'){
+            wheel_.l_theta_dot = msg.velocity[i];
+            wheel_.l_theta = msg.position[i];
+        } else if (msg.name[i][0]=='r'){
+            wheel_.r_theta_dot = msg.velocity[i];
+            wheel_.r_theta = msg.position[i];
+        } else if (msg.name[i][0]=='b'){
+            wheel_.b_theta_dot = msg.velocity[i];
+            wheel_.b_theta = msg.position[i];
+        }
+    }
+    updateAndOdom(wheel_);
+    
+}
+
+void updateAndOdom(Wheel wheel){
     timeCurrent = ros::Time::now();
     double duration, v_left, v_back, v_right;
     duration = (timeCurrent - timePrevious).toSec();
-    v_left  = (read[L_IND]  - wheel_.lpos ) / duration;
-    v_back  = (read[B_IND]  - wheel_.bpos ) / duration;
-    v_right = (read[R_IND]  - wheel_.rpos) / duration;
+    
+    v_left = wheel.l_theta_dot;
+    v_right = wheel.r_theta_dot;
+    v_back = wheel.b_theta_dot;
+
     timePrevious = timeCurrent;
 
     long double v_left0  = v_left  * R;
@@ -74,16 +99,19 @@ void updateAndOdom(double* read){
     double x,y,theta;
     y     = ((2.0 * v_back0) - v_left0 - v_right0) / 3.0;
     x     = ((1.73 * v_right0) - (1.73 * v_left0)) / 3.0;
-    theta = (v_left0 + v_back0 + v_right0) / (3*0.04);
+    // theta = (v_left0 + v_back0 + v_right0) / (3*0.04);
 
     double X = cos(odom_.theta)*x - sin(odom_.theta)*y;
     double Y = sin(odom_.theta)*x + cos(odom_.theta)*y;
 
+    // duration = (timeCurrent - timePrevious).toSec();
+    odom_.vx = X;
+    odom_.vy = Y;
     odom_.x += X * duration;
     odom_.y += Y * duration;
-    odom_.theta += theta * duration;
+    // odom_.theta += theta * duration;
 
-
+    publishOdom();
 }
 void publishOdom(){
     static tf::TransformBroadcaster br;
@@ -124,8 +152,8 @@ void publishOdom(){
 
     //set the velocity
     odom.child_frame_id = "origin_link";
-    odom.twist.twist.linear.x = odom_.x ;
-    odom.twist.twist.linear.y = odom_.y ;
+    odom.twist.twist.linear.x = odom_.vx ;
+    odom.twist.twist.linear.y = odom_.vy ;
     odom.twist.twist.linear.z = 0 ;
 
     odom.twist.twist.angular.x= 0 ;
@@ -149,6 +177,7 @@ void imu_callback(const sensor_msgs::Imu::ConstPtr& msg){
         msg->orientation.w);
     tf::Matrix3x3 m(q);
     m.getRPY(p_.rol, p_.pit, p_.yaw);
+    odom_.wx = msg->angular_velocity.z;
 
     if(imu_flag){
         imu_flag=false;
@@ -158,139 +187,15 @@ void imu_callback(const sensor_msgs::Imu::ConstPtr& msg){
     odom_.theta = p_.yaw - yaw_offset;
 }
 
+// class OmniDriver{
+//     private:
 
-void updateEncoderL(){    
-    int MSB = digitalRead(l->motor_encA);
-    int LSB = digitalRead(l->motor_encB);
+//     public:
+//         double l_w_dir=1, b_w_dir=1, r_w_dir=1;
+//         OmniDriver(ros::NodeHandle* n){
 
-    int encoded = (MSB<<1)|LSB;
-    int sum = (l->inter_val<<2)|encoded;
-    
-    if(sum == 0b1101 || sum == 0b0100 || sum == 0b0010 || sum == 0b1011)
-        l->pos--;
-    if(sum == 0b1110 || sum == 0b0111 || sum == 0b0001 || sum == 0b1000)
-        l->pos++;
-
-    l->inter_val = encoded;
-}
-
-void updateEncoderB(){    
-    int MSB = digitalRead(b->motor_encA);
-    int LSB = digitalRead(b->motor_encB);
-
-    int encoded = (MSB<<1)|LSB;
-    int sum = (b->inter_val<<2)|encoded;
-    
-    if(sum == 0b1101 || sum == 0b0100 || sum == 0b0010 || sum == 0b1011)
-        b->pos--;
-    if(sum == 0b1110 || sum == 0b0111 || sum == 0b0001 || sum == 0b1000)
-        b->pos++;
-
-    b->inter_val = encoded;
-}
-
-void updateEncoderR(){    
-    int MSB = digitalRead(r->motor_encA);
-    int LSB = digitalRead(r->motor_encB);
-
-    int encoded = (MSB<<1)|LSB;
-    int sum = (r->inter_val<<2)|encoded;
-    
-    if(sum == 0b1101 || sum == 0b0100 || sum == 0b0010 || sum == 0b1011)
-        r->pos--;
-    if(sum == 0b1110 || sum == 0b0111 || sum == 0b0001 || sum == 0b1000)
-        r->pos++;
-
-    r->inter_val = encoded;
-}
-
-void* controlL(void *vargp)
-{
-    //std::cout<<"lcontrol\n";
-    while(true){
-        l->control();
-        usleep(10);
-    }
-}
-void* controlR(void *vargp)
-{
-    //std::cout<<"rcontrol\n";
-    while(true){
-        r->control();
-        usleep(10);
-    }
-    
-}
-void* controlB(void *vargp)
-{
-    //std::cout<<"bcontrol\n";
-    while(true){
-        b->control();
-        usleep(10);
-    }
-}
-class OmniDriver{
-    private:
-
-    public:
-        double l_w_dir=1, b_w_dir=1, r_w_dir=1;
-        OmniDriver(ros::NodeHandle* n){
-
-#ifndef __PI_WIRING_SET__
-#define __PI_WIRING_SET__
-            wiringPiSetup();
-#endif
-            int lp = getenv("LP")?atoi(getenv("LP")):pi_23, ln = getenv("LN")?atoi(getenv("LN")):pi_22, lenb = getenv("LENB")?atoi(getenv("LENB")):pi_27;
-            int lencp = getenv("LENCP")?atoi(getenv("LENCP")):pi_17, lencn = getenv("LENCN")?atoi(getenv("LENCN")):pi_4;
-            int rp = getenv("RP")?atoi(getenv("RP")):pi_10, rn = getenv("RN")?atoi(getenv("RN")):pi_9, renb = getenv("RENB")?atoi(getenv("RENB")):pi_25;
-            int rencp = getenv("RENCP")?atoi(getenv("RENCP")):pi_20, rencn = getenv("RENCN")?atoi(getenv("RENCN")):pi_21;
-            int bp = getenv("BP")?atoi(getenv("BP")):pi_6, bn = getenv("BN")?atoi(getenv("BN")):pi_5, benb = getenv("BENB")?atoi(getenv("BENB")):pi_12;
-            int bencp = getenv("BENCP")?atoi(getenv("BENCP")):pi_11, bencn = getenv("BENCN")?atoi(getenv("BENCN")):pi_26;
-
-            double l_kp=5.0, r_kp=5.0, b_kp=5.0;
-            double l_kd=1.0, r_kd=1.0, b_kd=1.0;
-            double l_ki=0.01, r_ki=0.01, b_ki=0.01; 
-
-            n->getParam("prop_gain/l_p_gain", l_kp);
-            n->getParam("prop_gain/r_p_gain", r_kp);
-            n->getParam("prop_gain/b_p_gain", b_kp);
-
-            n->getParam("diff_gain/l_d_gain", l_kd);
-            n->getParam("diff_gain/r_d_gain", r_kd);
-            n->getParam("diff_gain/b_d_gain", b_kd);
-
-            n->getParam("inte_gain/l_i_gain", l_ki);
-            n->getParam("inte_gain/r_i_gain", r_ki);
-            n->getParam("inte_gain/b_i_gain", b_ki);
-
-            n->getParam("l_wheel_dir", l_w_dir);
-            n->getParam("r_wheel_dir", r_w_dir);
-            n->getParam("b_wheel_dir", b_w_dir);
-
-            l = new Motor(lp, ln, lenb, lencp, lencn, l_kp, l_kd, l_ki);
-            r = new Motor(rp, rn, renb, rencp, rencn, r_kp, r_kd, r_ki);
-            b = new Motor(bp, bn, benb, bencp, bencn, b_kp, r_kd, b_ki);
-            
-            wiringPiISR(l->motor_encA, INT_EDGE_BOTH, updateEncoderL);
-            wiringPiISR(l->motor_encB, INT_EDGE_BOTH, updateEncoderL);
-
-            wiringPiISR(r->motor_encA, INT_EDGE_BOTH, updateEncoderR);
-            wiringPiISR(r->motor_encB, INT_EDGE_BOTH, updateEncoderR);
-
-            wiringPiISR(b->motor_encA, INT_EDGE_BOTH, updateEncoderB);
-            wiringPiISR(b->motor_encB, INT_EDGE_BOTH, updateEncoderB);
-            //std::cout<<"here";
-            pthread_create(&(l->thread_id), NULL, controlL, NULL);
-            pthread_create(&(r->thread_id), NULL, controlR, NULL);
-            pthread_create(&(b->thread_id), NULL, controlB, NULL);
-        }
-        
-        void readings(double* _re){
-            _re[L_IND] = l->read();
-            _re[R_IND] = r->read();
-            _re[B_IND] = b->read();
-        }
-};
+//         }
+// };
 
 int main(int argc, char** argv){
 
@@ -298,47 +203,28 @@ int main(int argc, char** argv){
     ros::NodeHandle n("");
     timePrevious = ros::Time::now();
     int debug = getenv("DEBUG")?atoi(getenv("DEBUG")):0;
-    double wheel_speed = getenv("WSP")?atoi(getenv("WSP")):10;
+    // double wheel_speed = getenv("WSP")?atoi(getenv("WSP")):10;
     double hz=100;
     ros::Rate rate(hz);
     double dt_ = 1.0/hz;
-    OmniDriver* div;
-    div = new OmniDriver(&n);
+    // OmniDriver* div;
+    // div = new OmniDriver(&n);
 
     cmd_vel_sub = n.subscribe("cmd_vel", 1000, velocity_callback);
-    imu_sub = n.subscribe("imu/data", 100, imu_callback);
+    jnt_sub = n.subscribe("joint_states", 1000, jnt_state_callback);
+    imu_sub = n.subscribe("imu/data", 100, imu_callback); // use the one with madwigk filter not this
     pub_ = n.advertise<nav_msgs::Odometry>("odom", 50) ;
-    
+    l_pub_ = n.advertise<std_msgs::Float64>("velocity_controller/left_joint_vel_controller/command", 10);
+    r_pub_ = n.advertise<std_msgs::Float64>("velocity_controller/right_joint_vel_controller/command", 10);
+    b_pub_ = n.advertise<std_msgs::Float64>("velocity_controller/back_joint_vel_controller/command", 10);
     long int i = 0;
 
     while(ros::ok()){
-        // if(debug){
-        //     i++;
-        //     i/=100000;
-        //     if((i/1000)%2==0){
-        //         std::cout<<"x\n";
-        //         vx = 0.1;
-        //         vy = 0;
-        //     } else {
-        //         std::cout<<"y\n";
-        //         vy = 0.1;
-        //         vx = 0;
-        //     }
-        // }
-
-        double read[3];
-        div->readings(read);
-        updateAndOdom(read);
+       
         
-        //std::cout<<"L: "<<read[L_IND]<<" R: "<<read[R_IND]<<" B: "<<read[B_IND]<<"\n";
-        wheel_.lpos = read[L_IND];
-        wheel_.rpos = read[R_IND];
-        wheel_.bpos = read[B_IND];
-        //delay(10);
-        std::cout<<wheel_.lpos<<" "<<wheel_.rpos<<" "<<wheel_.bpos<<"\n";
         double vmx= vx;
         double vmy= vy;
-        double wmp = wp ;//- yaw;
+        double wmp = wp ; // Body frame
         
         double v1, v2, v3;
         v1 = (L * wmp - (vmx / 2) - (sqrt3by2 * vmy));
@@ -346,13 +232,16 @@ int main(int argc, char** argv){
         v3 = (L * wmp - (vmx / 2) + (sqrt3by2 * vmy));
 
         //v1=v2=v3=1;
-        wheel_.lpos = wheel_.lpos + div->l_w_dir*wheel_speed*v1*dt_/R;
-        wheel_.bpos = wheel_.bpos + div->b_w_dir*wheel_speed*v2*dt_/R;
-        wheel_.rpos = wheel_.rpos + div->r_w_dir*wheel_speed*v3*dt_/R;
-        
-        l->set(wheel_.lpos);
-        r->set(wheel_.rpos);
-        b->set(wheel_.bpos);
+        // wheel_.lpos = wheel_.lpos + div->l_w_dir*wheel_speed*v1*dt_/R;
+        // wheel_.bpos = wheel_.bpos + div->b_w_dir*wheel_speed*v2*dt_/R;
+        // wheel_.rpos = wheel_.rpos + div->r_w_dir*wheel_speed*v3*dt_/R;
+        std_msgs::Float64 wheel_vel;
+        wheel_vel.data = v1;
+        l_pub_.publish(wheel_vel);
+        wheel_vel.data = v2;
+        b_pub_.publish(wheel_vel);
+        wheel_vel.data = v3;
+        r_pub_.publish(wheel_vel);
 
         publishOdom();
 
@@ -360,11 +249,5 @@ int main(int argc, char** argv){
         rate.sleep();
         
     }
-    l->clear();
-    r->clear();
-    b->clear();
-    free(l);
-    free(r);
-    free(b);
     return 0;
 }

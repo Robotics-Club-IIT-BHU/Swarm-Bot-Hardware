@@ -8,6 +8,22 @@
 
 HardwareSerial ros_pot(PA10, PA9);
 
+class ModHardware: public ArduinoHardware
+{
+  public:
+    ModHardware():ArduinoHardware(&ros_pot, 230400){}; //115200){};
+};
+
+void messageCb(const std_msgs::Empty& toggle_msg){
+  digitalWrite(PC13, HIGH-digitalRead(PC13));
+}
+
+
+
+ros::NodeHandle_<ModHardware> nh;
+
+
+
 Motor* l;
 Motor* r;
 Motor* b;
@@ -28,11 +44,11 @@ void updateEncoderL(){
         l->pos++;
 
     l->inter_val = encoded;
-    if((millis() - l->prev_check)>5){ // update at 200 hz
-      l->curr_vel = (double)MILLIINV*(l->read()-l->read(l->prev_pos))/(double)(millis() - l->prev_check);
-      l->prev_check = millis();
-      l->prev_pos = l->pos;
-    }
+    // if((millis() - l->prev_check)>5){ // update at 200 hz
+    //   l->curr_vel = (double)MILLIINV*(l->read()-l->read(l->prev_pos))/(double)(millis() - l->prev_check);
+    //   l->prev_check = millis();
+    //   l->prev_pos = l->pos;
+    // }
 }
 
 void updateEncoderB(){    
@@ -48,11 +64,11 @@ void updateEncoderB(){
         b->pos++;
 
     b->inter_val = encoded;
-    if((millis() - b->prev_check)>5){ // update at 200 hz
-      b->curr_vel = (double)MILLIINV*(b->read()-b->read(l->prev_pos))/(double)(millis() - b->prev_check);
-      b->prev_check = millis();
-      b->prev_pos = b->pos;
-    }
+    // if((millis() - b->prev_check)>5){ // update at 200 hz
+    //   b->curr_vel = (double)MILLIINV*(b->read()-b->read(l->prev_pos))/(double)(millis() - b->prev_check);
+    //   b->prev_check = millis();
+    //   b->prev_pos = b->pos;
+    // }
 }
 
 void updateEncoderR(){    
@@ -68,27 +84,15 @@ void updateEncoderR(){
         r->pos++;
 
     r->inter_val = encoded;
-    if((millis() - r->prev_check)>5){ // update at 200 hz
-      r->curr_vel = (double)MILLIINV*(r->read()-r->read(l->prev_pos))/(double)(millis() - r->prev_check);
-      r->prev_check = millis();
-      r->prev_pos = r->pos;
-    }
-}
-
-
-class ModHardware: public ArduinoHardware
-{
-  public:
-    ModHardware():ArduinoHardware(&ros_pot, 230400){}; //115200){};
-};
-
-void messageCb(const std_msgs::Empty& toggle_msg){
-  digitalWrite(PC13, HIGH-digitalRead(PC13));
+    // if((millis() - r->prev_check)>5){ // update at 200 hz
+    //   r->curr_vel = (double)MILLIINV*(r->read()-r->read(l->prev_pos))/(double)(millis() - r->prev_check);
+    //   r->prev_check = millis();
+    //   r->prev_pos = r->pos;
+    // }
 }
 
 
 
-ros::NodeHandle_<ModHardware> nh;
 
 void bJointVel(const std_msgs::Float64& msg){
   b->setVel(msg.data);
@@ -147,9 +151,9 @@ void setup() {
   for(int i=0; i<3;i++)
     jnt_st.effort[i] = 0;
   
-  l = new Motor(LMOTOR_P, LMOTOR_N, LMOTOR_M, LMOTOR_ENCA, LMOTOR_ENCB, 100, 0, 0);
-  r = new Motor(RMOTOR_P, RMOTOR_N, RMOTOR_M, RMOTOR_ENCA, RMOTOR_ENCB, 100, 0, 0);
-  b = new Motor(BMOTOR_P, BMOTOR_N, BMOTOR_M, BMOTOR_ENCA, BMOTOR_ENCB, 100, 0, 0);
+  l = new Motor(LMOTOR_P, LMOTOR_N, LMOTOR_M, LMOTOR_ENCA, LMOTOR_ENCB, 50, 100, 0);
+  r = new Motor(RMOTOR_P, RMOTOR_N, RMOTOR_M, RMOTOR_ENCA, RMOTOR_ENCB, 50, 100, 0);
+  b = new Motor(BMOTOR_P, BMOTOR_N, BMOTOR_M, BMOTOR_ENCA, BMOTOR_ENCB, 50, 100, 0);
   
   pinMode(l->motor_encA, INPUT);
   pinMode(l->motor_encB, INPUT);
@@ -186,19 +190,19 @@ void loop() {
   jnt_st.position[1] = r->read();
   jnt_st.position[2] = b->read();
 
-  if((millis() - l->prev_check)>5){ // update at 200 hz
+  if((millis() - l->prev_check)>20){ // update at 200 hz
     l->curr_vel = (double)MILLIINV*(l->read()-l->read(l->prev_pos))/(double)(millis() - l->prev_check);
     l->prev_check = millis();
     l->prev_pos = l->pos;
   }
   
-  if((millis() - b->prev_check)>5){ // update at 200 hz
+  if((millis() - b->prev_check)>20){ // update at 200 hz
     b->curr_vel = (double)MILLIINV*(b->read()-b->read(b->prev_pos))/(double)(millis() - b->prev_check);
     b->prev_check = millis();
     b->prev_pos = b->pos;
   }
   
-  if((millis() - r->prev_check)>5){ // update at 200 hz
+  if((millis() - r->prev_check)>20){ // update at 200 hz
     r->curr_vel = (double)MILLIINV*(r->read()-r->read(r->prev_pos))/(double)(millis() - r->prev_check);
     r->prev_check = millis();
     r->prev_pos = r->pos;
