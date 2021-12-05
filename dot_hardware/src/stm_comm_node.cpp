@@ -4,8 +4,9 @@
 * data: 5th Dec 2021
 */
 #include <stdio.h>
+#include <iostream>
 #include <stdlib.h>
-#include <string.h>
+#include <string>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -31,9 +32,9 @@ sensor_msgs::JointState jnt_st;
 
 void signal_handler_IO (int status);   /* definition of signal handler */
 void inp_parse(int res);
-void lf_wheel_callback(const std_msgs::Float64::ConstPtr& msg);
-void rt_wheel_callback(const std_msgs::Float64::ConstPtr& msg);
-void bk_wheel_callback(const std_msgs::Float64::ConstPtr& msg);
+void lf_wheel_callback(const std_msgs::Float64& msg);
+void rt_wheel_callback(const std_msgs::Float64& msg);
+void bk_wheel_callback(const std_msgs::Float64& msg);
 
 int n;
 int fd;
@@ -95,10 +96,11 @@ int main(int argc, char *argv[])
     // printf("UART1 configured....\n");
 
     connected = 1;
-    while(connected == 1){
-          usleep(2500000);
-    }
-
+    //while(connected == 1){
+          
+    //      usleep(2500000);
+    //}
+    ros::spin();
     close(fd);
     exit(0);
 }
@@ -112,7 +114,7 @@ void signal_handler_IO (int status)
     result = read(fd, buf, (int)BUF_SIZE);
     buf[result]= 0;
     inp_parse(result);
-    printf("%s\n",buf);
+    //printf("%s\n",buf);
     
 }
 
@@ -123,10 +125,13 @@ void inp_parse(int res){
     buf[res];
     std::string inter=""; 
     int i=0;
-    if(buf[i]=='|')i++;
+    while(buf[i]=='|')i++;
+    //printf("%s",buf);
     for(;i<res;i++){
+        //printf("%c",buf[i]);
+	if(buf[i]==0)break;
         if(buf[i]=='|'){
-            printf("%s",inter);
+            std::cout<<inter<<"\n";
             if(inter!=""){
                 switch(inter[0]){
                     case 'l':
@@ -153,35 +158,40 @@ void inp_parse(int res){
             }
             inter = "";
         } else {
-            inter += buf[i];
+            inter.push_back(buf[i]);
         }
     }
+    //std::cout<<inter<<"\n";
     if(result==-1) // Validate the string
         return;
 
     jnt_state_pub_.publish(jnt_st);
 }
 
-void lf_wheel_callback(const std_msgs::Float64::ConstPtr& msg){
-    double value = msg->data;
+void lf_wheel_callback(const std_msgs::Float64& msg){
+    double value = msg.data;
+    //std::cout<<value<<"\n";
     char msg_data[8];
     sprintf(msg_data, "lf:%.2f|",value);
+    //printf("%s",msg_data);
     write(fd, msg_data, 8);
     usleep(8*100);
 }
 
-void rt_wheel_callback(const std_msgs::Float64::ConstPtr& msg){
-    double value = msg->data;
+void rt_wheel_callback(const std_msgs::Float64& msg){
+    double value = msg.data;
     char msg_data[8];
     sprintf(msg_data, "rt:%.2f|",value);
+    //printf("%s",msg_data);
     write(fd, msg_data, 8);
     usleep(8*100);
 }
 
-void bk_wheel_callback(const std_msgs::Float64::ConstPtr& msg){
-    double value = msg->data;
+void bk_wheel_callback(const std_msgs::Float64& msg){
+    double value = msg.data;
     char msg_data[8];
     sprintf(msg_data, "bk:%.2f|",value);
+    //printf("%s",msg_data);
     write(fd, msg_data, 8);
     usleep(8*100);
 }
