@@ -159,7 +159,7 @@ void inp_parse(int res){
     jnt_state_pub_.publish(jnt_st);
 }
 
-void lf_wheel_callback(std_msgs::Float64::ConstPtr& msg){
+void lf_wheel_callback(const std_msgs::Float64::ConstPtr& msg){
     double value = msg->data;
     char msg_data[8];
     sprintf(msg_data, "lf:%.2f|",value);
@@ -167,7 +167,7 @@ void lf_wheel_callback(std_msgs::Float64::ConstPtr& msg){
     usleep(8*100);
 }
 
-void rt_wheel_callback(std_msgs::Float64::ConstPtr& msg){
+void rt_wheel_callback(const std_msgs::Float64::ConstPtr& msg){
     double value = msg->data;
     char msg_data[8];
     sprintf(msg_data, "rt:%.2f|",value);
@@ -175,7 +175,7 @@ void rt_wheel_callback(std_msgs::Float64::ConstPtr& msg){
     usleep(8*100);
 }
 
-void bk_wheel_callback(std_msgs::Float64::ConstPtr& msg){
+void bk_wheel_callback(const std_msgs::Float64::ConstPtr& msg){
     double value = msg->data;
     char msg_data[8];
     sprintf(msg_data, "bk:%.2f|",value);
