@@ -1,28 +1,6 @@
-//#include <ros.h>
-////#include <std_msgs/String.h>
-//#include <SPI.h>
-//#include <std_msgs/Empty.h>
 #include "motor.h"
-//#include <sensor_msgs/JointState.h>
-//#include <std_msgs/Float64.h>
 
 HardwareSerial ros_pot(PA10, PA9);
-
-//class ModHardware: public ArduinoHardware
-//{
-//  public:
-//    ModHardware():ArduinoHardware(&ros_pot, 500000){}; //115200){};
-//};
-
-//void messageCb(const std_msgs::Empty& toggle_msg){
-//  digitalWrite(PC13, HIGH-digitalRead(PC13));
-//}
-
-
-
-//ros::NodeHandle_<ModHardware> nh;
-
-
 
 Motor* l;
 Motor* r;
@@ -30,6 +8,7 @@ Motor* b;
 
 long pos=0;
 long inter_val=0;
+//long unsigned int prev_time;
 
 void updateEncoderL(){    
     int MSB = digitalRead(l->motor_encA);
@@ -91,33 +70,6 @@ void updateEncoderR(){
     // }
 }
 
-
-
-
-//void bJointVel(const std_msgs::Float64& msg){
-//  b->setVel(msg.data);
-//}
-//
-//void rJointVel(const std_msgs::Float64& msg){
-//  r->setVel(msg.data);
-//}
-//
-//void lJointVel(const std_msgs::Float64& msg){
-//  l->setVel(msg.data);
-//}
-
-//std_msgs::String str_msg;
-//sensor_msgs::JointState jnt_st;
-
-// ros::Publisher chatter("chatter", &str_msg);
-//ros::Publisher joint_state_pub("joint_states", &jnt_st);
-
-// char hello[13] = "hello world!";
-// ros::Subscriber<std_msgs::Empty> sub("toggle_led", &messageCb);
-//ros::Subscriber<std_msgs::Float64> l_joint_sub("velocity_controller/left_joint_vel_controller/command", &lJointVel);
-//ros::Subscriber<std_msgs::Float64> r_joint_sub("velocity_controller/right_joint_vel_controller/command", &rJointVel);
-//ros::Subscriber<std_msgs::Float64> b_joint_sub("velocity_controller/back_joint_vel_controller/command", &bJointVel);
-
 void readCMD(){
   bool start = true;
   bool flashout = false;
@@ -127,84 +79,68 @@ void readCMD(){
   bool dec = false;
   while(ros_pot.available()){
     char c = ros_pot.read();
-    if(c=='#')break;
-    if(start && c!='$')flashout=true;
-    if(!flashout){
-      if(c=='|'){
-        dec = false;
-        if(cnt==0){
-          l->setVel(buf_signi/denom);
-        }else if (cnt==1){
-          b->setVel(buf_signi/denom);
-        }else {
-          r->setVel(buf_signi/denom);
-        }
-        cnt++;
+    if(c=='|'){
+      if(start)continue;
+      start = true;
+      dec = false;
+      if(cnt==0){
+        // ros_pot.println(buf_signi/denom,3);
+        l->setVel(buf_signi/denom);
+      }else if (cnt==1){
+        // ros_pot.println(buf_signi/denom,3);
+        b->setVel(buf_signi/denom);
+      }else if (cnt==2) {
+        // ros_pot.println(buf_signi/denom,3);
+        r->setVel(buf_signi/denom);
       }
-      else{
+      buf_signi = 0;
+      denom = 1;
+    }else{
+      if(start){
+        start = false;
+        if(c=='l'){
+          cnt = 0;
+        } else if(c=='b'){
+          cnt = 1;
+        } else if(c=='r'){
+          cnt = 2;
+        } else {
+          cnt = -1;
+        }
+      } else {
         if(c=='.'){
           dec = true;
         } else {
+          if(c>'9'||c<'0')continue;
           buf_signi *=10;
           buf_signi += (int)(c-'0');  
           if(dec){
             denom *= 10;
           }
         }
-        
-        
       }
     }
-    
   }
 }
 
-void writeState(l_pos, b_pos, r_pos, l_vel, b_vel, r_vel){
-  ros_pot.print("$lp|");
-  ros_pot.print(l_pos);
-  ros_pot.print("|bp|");
-  ros_pot.print(b_pos);
-  ros_pot.print("|rp|");
-  ros_pot.print(r_pos);
-  ros_pot.print("|lv|");
-  ros_pot.print(l_vel);
-  ros_pot.print("|bv|");
-  ros_pot.print(b_vel);
-  ros_pot.print("|rv|");
-  ros_pot.print(r_vel);
-  ros_pot.print("#\n");
+void writeState(double l_pos, double b_pos, double r_pos, double l_vel, double b_vel, double r_vel){
+  ros_pot.print("|l_p:");
+  ros_pot.print(l_pos,3);
+  ros_pot.print("|b_p:");
+  ros_pot.print(b_pos,3);
+  ros_pot.print("|r_p:");
+  ros_pot.print(r_pos,3);
+  ros_pot.print("|l_v:");
+  ros_pot.print(l_vel,3);
+  ros_pot.print("|b_v:");
+  ros_pot.print(b_vel,3);
+  ros_pot.print("|r_v:");
+  ros_pot.print(r_vel,3);
+  ros_pot.print("|\n");
 }
 void setup() {
-  ros_pot.begin(500000);
+  ros_pot.begin(2000000);
   pinMode(PC13, OUTPUT);
-//  nh.initNode();
-  // nh.advertise(chatter);
-//  nh.advertise(joint_state_pub);
-//  nh.subscribe(l_joint_sub);
-//  nh.subscribe(b_joint_sub);
-//  nh.subscribe(r_joint_sub);
-//  // nh.subscribe(sub);
-//  jnt_st.header.frame_id = "base_link";
-//  jnt_st.name = (char** )malloc(sizeof(char[32])*3);
-//  jnt_st.name_length = 3;
-//  jnt_st.name[0] = "left_wheel_joint";
-//  jnt_st.name[1] = "right_wheel_joint";
-//  jnt_st.name[2] = "back_wheel_joint";
-//  jnt_st.position = (float *)malloc(sizeof(float)*3);
-//  jnt_st.position_length = 3;
-//  jnt_st.velocity = (float *)malloc(sizeof(float)*3);
-//  jnt_st.velocity_length = 3;
-//  jnt_st.effort = (float *)malloc(sizeof(float)*3);
-//  jnt_st.effort_length = 3;
-
-//  for(int i=0; i<3;i++)
-//    jnt_st.position[i] = 0;
-//    
-//  for(int i=0; i<3;i++)
-//    jnt_st.velocity[i] = 0;
-//  
-//  for(int i=0; i<3;i++)
-//    jnt_st.effort[i] = 0;
   
   l = new Motor(LMOTOR_P, LMOTOR_N, LMOTOR_M, LMOTOR_ENCA, LMOTOR_ENCB, 10, 0, 0);
   r = new Motor(RMOTOR_P, RMOTOR_N, RMOTOR_M, RMOTOR_ENCA, RMOTOR_ENCB, 10, 0, 0);
@@ -234,16 +170,11 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(b->motor_encB), updateEncoderB, CHANGE);
   attachInterrupt(digitalPinToInterrupt(r->motor_encA), updateEncoderR, CHANGE);
   attachInterrupt(digitalPinToInterrupt(r->motor_encB), updateEncoderR, CHANGE);
+  //prev_time = micros();
   
 }
 
 void loop() {
-  // str_msg.data = hello;
-  // chatter.publish(&str_msg);
-//  jnt_st.header.stamp = nh.now();
-//  jnt_st.position[0] = l->read();
-//  jnt_st.position[1] = r->read();
-//  jnt_st.position[2] = b->read();
   readCMD();
   
   if((millis() - l->prev_check)>20){ // update at 200 hz
@@ -267,17 +198,13 @@ void loop() {
   l->control();
   r->control();
   b->control();
-//  jnt_st.velocity[0] = l->curr_vel;
-//  jnt_st.velocity[1] = r->curr_vel;
-//  jnt_st.velocity[2] = b->curr_vel;
 
-//  joint_state_pub.publish(&jnt_st);
 
   writeState(l->read(), b->read(), r->read(), l->curr_vel, b->curr_vel, r->curr_vel);
-  
-
-
-//  nh.spinOnce();
-//  ros_pot.print("print");
   //delay(10); // 100 hz
+  delayMicroseconds(666); // 1.5KHz
+  //ros_pot.print("********************************");
+  //ros_pot.print(1000000./(micros()-prev_time));
+  //ros_pot.print("********************************\n");
+  //prev_time = micros();
 }

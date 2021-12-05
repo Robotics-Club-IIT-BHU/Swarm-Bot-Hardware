@@ -57,8 +57,8 @@ int main(int argc, char *argv[])
     jnt_st.header.stamp = ros::Time::now();
     jnt_st.name = std::vector<std::string>(3,"none");
     jnt_st.name[0] = "left_joint";
-    jnt_st.name[1] = "right_joint";
-    jnt_st.name[2] = "back_joint";
+    jnt_st.name[2] = "right_joint";
+    jnt_st.name[1] = "back_joint";
 
     jnt_st.position = std::vector<double> (3,0);
     jnt_st.velocity = std::vector<double> (3,0);
@@ -142,15 +142,15 @@ void inp_parse(int res){
                         break;
                     case 'r':
                         if(inter[2]=='v')
-                            jnt_st.velocity[1] = std::stod(inter.substr(4));
-                        else if(inter[2]=='p')
-                            jnt_st.position[1] = std::stod(inter.substr(4));
-                        break;
-                    case 'b':
-                        if(inter[2]=='v')
                             jnt_st.velocity[2] = std::stod(inter.substr(4));
                         else if(inter[2]=='p')
                             jnt_st.position[2] = std::stod(inter.substr(4));
+                        break;
+                    case 'b':
+                        if(inter[2]=='v')
+                            jnt_st.velocity[1] = std::stod(inter.substr(4));
+                        else if(inter[2]=='p')
+                            jnt_st.position[1] = std::stod(inter.substr(4));
                         break;
                 }
             } else {
