@@ -126,6 +126,7 @@ void inp_parse(int res){
     if(buf[i]=='|')i++;
     for(;i<res;i++){
         if(buf[i]=='|'){
+            printf("%s",inter);
             if(inter!=""){
                 switch(inter[0]){
                     case 'l':
@@ -150,6 +151,7 @@ void inp_parse(int res){
             } else {
                 break;
             }
+            inter = "";
         } else {
             inter += buf[i];
         }
