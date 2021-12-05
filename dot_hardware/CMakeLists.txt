@@ -158,6 +158,11 @@ target_link_libraries(omni_drive_node
   ${WIRINGPI_LIBRARIES}
   ${CMAKE_THREAD_LIBS_INIT}
 )
+target_link_libraries(stm_comm_node
+  ${catkin_LIBRARIES}
+  ${WIRINGPI_LIBRARIES}
+  ${CMAKE_THREAD_LIBS_INIT}
+)
 
 #############
 ## Install ##
