@@ -27,6 +27,7 @@ ros::Publisher jnt_state_pub_;
 ros::Subscriber l_wheel_cmd_;
 ros::Subscriber r_wheel_cmd_;
 ros::Subscriber b_wheel_cmd_;
+sensor_msgs::JointState jnt_st;
 
 void signal_handler_IO (int status);   /* definition of signal handler */
 void inp_parse(int res);
@@ -50,6 +51,17 @@ int main(int argc, char *argv[])
     l_wheel_cmd_ = n.subscribe("left_joint_velocity_controller/command", 1000, lf_wheel_callback);
     r_wheel_cmd_ = n.subscribe("right_joint_velocity_controller/command", 1000, rt_wheel_callback);
     b_wheel_cmd_ = n.subscribe("back_joint_velocity_controller/command", 1000, bk_wheel_callback);
+
+    jnt_st.header.frame_id = "base_link";
+    jnt_st.header.stamp = ros::Time::now();
+    jnt_st.name = std::vector<std::string>(3,0);
+    jnt_st.name[0] = "left_joint";
+    jnt_st.name[1] = "right_joint";
+    jnt_st.name[2] = "back_joint";
+
+    jnt_st.position = std::vector<double> (3,0);
+    jnt_st.velocity = std::vector<double> (3,0);
+    jnt_st.effort = std::vector<double> (3,0);
 
     fd = open("/dev/ttyAMA0", O_RDWR | O_NOCTTY | O_NDELAY);
     if (fd == -1)
@@ -106,26 +118,43 @@ void signal_handler_IO (int status)
 
 void inp_parse(int res){
 
-    int result;
+    int result=1;
     /// add your data here to the msg
     buf[res];
+    std::string inter=""; 
 
+    for(int i=0;i<res;i++){
+        if(buf[i]=='|'){
+            if(inter!=""){
+                switch(inter[0]){
+                    case 'l':
+                        if(inter[2]=='v')
+                            jnt_st.velocity[0] = std::stod(inter.substr(4));
+                        else if(inter[2]=='p')
+                            jnt_st.position[0] = std::stod(inter.substr(4));
+                        break;
+                    case 'r':
+                        if(inter[2]=='v')
+                            jnt_st.velocity[1] = std::stod(inter.substr(4));
+                        else if(inter[2]=='p')
+                            jnt_st.position[1] = std::stod(inter.substr(4));
+                        break;
+                    case 'b':
+                        if(inter[2]=='v')
+                            jnt_st.velocity[2] = std::stod(inter.substr(4));
+                        else if(inter[2]=='p')
+                            jnt_st.position[2] = std::stod(inter.substr(4));
+                        break;
+                }
+            } else {
+                break;
+            }
+        } else {
+            inter += buf[i];
+        }
+    }
     if(result==-1) // Validate the string
         return;
-
-    sensor_msgs::JointState jnt_st;
-    jnt_st.header.frame_id = "base_link";
-    jnt_st.header.stamp = ros::Time::now();
-    jnt_st.name = std::vector<std::string>(3,0);
-    jnt_st.name[0] = "left_joint";
-    jnt_st.name[1] = "right_joint";
-    jnt_st.name[2] = "back_joint";
-
-    jnt_st.position = std::vector<double> (3,0);
-    jnt_st.velocity = std::vector<double> (3,0);
-    jnt_st.effort = std::vector<double> (3,0);
-
-    
 
     jnt_state_pub_.publish(jnt_st);
 }
