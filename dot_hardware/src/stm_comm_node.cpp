@@ -164,6 +164,7 @@ void lf_wheel_callback(std_msgs::Float64::ConstPtr& msg){
     char msg_data[8];
     sprintf(msg_data, "lf:%.2f|",value);
     write(fd, msg_data, 8);
+    usleep(8*100);
 }
 
 void rt_wheel_callback(std_msgs::Float64::ConstPtr& msg){
@@ -171,6 +172,7 @@ void rt_wheel_callback(std_msgs::Float64::ConstPtr& msg){
     char msg_data[8];
     sprintf(msg_data, "rt:%.2f|",value);
     write(fd, msg_data, 8);
+    usleep(8*100);
 }
 
 void bk_wheel_callback(std_msgs::Float64::ConstPtr& msg){
@@ -178,4 +180,5 @@ void bk_wheel_callback(std_msgs::Float64::ConstPtr& msg){
     char msg_data[8];
     sprintf(msg_data, "bk:%.2f|",value);
     write(fd, msg_data, 8);
+    usleep(8*100);
 }
