@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
     termAttr.c_iflag &= ~(IXON | IXOFF | IXANY);
     termAttr.c_oflag &= ~OPOST;
     tcsetattr(fd,TCSANOW,&termAttr);
-    printf("UART1 configured....\n");
+    // printf("UART1 configured....\n");
 
     connected = 1;
     while(connected == 1){
@@ -105,14 +105,14 @@ int main(int argc, char *argv[])
 
 void signal_handler_IO (int status)
 {
-    printf("received data from UART.\n");
+    // printf("received data from UART.\n");
     uint8_t x;
     int result;
     
     result = read(fd, buf, (int)BUF_SIZE);
     buf[result]= 0;
     inp_parse(result);
-    // printf("%s\n",buf);
+    printf("%s\n",buf);
     
 }
 
