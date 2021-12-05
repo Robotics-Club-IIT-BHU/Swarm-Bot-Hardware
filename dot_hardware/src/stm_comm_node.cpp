@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 
     jnt_st.header.frame_id = "base_link";
     jnt_st.header.stamp = ros::Time::now();
-    jnt_st.name = std::vector<std::string>(3,0);
+    jnt_st.name = std::vector<std::string>(3,"none");
     jnt_st.name[0] = "left_joint";
     jnt_st.name[1] = "right_joint";
     jnt_st.name[2] = "back_joint";
