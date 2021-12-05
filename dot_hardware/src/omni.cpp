@@ -38,6 +38,7 @@ double vx=0;
 double vy=0;
 double wp=0;
 
+
 struct Wheel{
     double l_theta;
     double l_theta_dot;
@@ -63,6 +64,9 @@ struct Odom{
     double vy;
     double wx;
 } odom_;
+
+void updateAndOdom(Wheel wheel);
+void publishOdom();
 
 void jnt_state_callback(const sensor_msgs::JointState &msg){
     double jnt_vel;
