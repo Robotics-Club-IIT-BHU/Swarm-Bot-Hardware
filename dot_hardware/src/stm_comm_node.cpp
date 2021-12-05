@@ -122,8 +122,9 @@ void inp_parse(int res){
     /// add your data here to the msg
     buf[res];
     std::string inter=""; 
-
-    for(int i=0;i<res;i++){
+    int i=0;
+    if(buf[i]=='|')i++;
+    for(;i<res;i++){
         if(buf[i]=='|'){
             if(inter!=""){
                 switch(inter[0]){
