@@ -31,9 +31,9 @@ sensor_msgs::JointState jnt_st;
 
 void signal_handler_IO (int status);   /* definition of signal handler */
 void inp_parse(int res);
-void lf_wheel_callback(std_msgs::Float64::ConstPtr& msg);
-void rt_wheel_callback(std_msgs::Float64::ConstPtr& msg);
-void bk_wheel_callback(std_msgs::Float64::ConstPtr& msg);
+void lf_wheel_callback(const std_msgs::Float64::ConstPtr& msg);
+void rt_wheel_callback(const std_msgs::Float64::ConstPtr& msg);
+void bk_wheel_callback(const std_msgs::Float64::ConstPtr& msg);
 
 int n;
 int fd;
