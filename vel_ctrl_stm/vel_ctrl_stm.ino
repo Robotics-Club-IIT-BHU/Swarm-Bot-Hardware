@@ -8,7 +8,7 @@ Motor* b;
 
 long pos=0;
 long inter_val=0;
-//long unsigned int prev_time;
+long unsigned int prev_time;
 
 void updateEncoderL(){    
     int MSB = digitalRead(l->motor_encA);
@@ -170,11 +170,12 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(b->motor_encB), updateEncoderB, CHANGE);
   attachInterrupt(digitalPinToInterrupt(r->motor_encA), updateEncoderR, CHANGE);
   attachInterrupt(digitalPinToInterrupt(r->motor_encB), updateEncoderR, CHANGE);
-  //prev_time = micros();
+  prev_time = micros();
   
 }
 
 void loop() {
+  prev_time = micros();
   readCMD();
   
   if((millis() - l->prev_check)>20){ // update at 200 hz
@@ -202,7 +203,8 @@ void loop() {
 
   writeState(l->read(), b->read(), r->read(), l->curr_vel, b->curr_vel, r->curr_vel);
   //delay(10); // 100 hz
-  delayMicroseconds(666); // 1.5KHz
+  long unsigned int dt = (micros() - prev_time);
+  delayMicroseconds(max(((long unsigned int)666 - dt), (long unsigned int)0)); // 1.5KHz  = 1000000/1500 = 666.66
   //ros_pot.print("********************************");
   //ros_pot.print(1000000./(micros()-prev_time));
   //ros_pot.print("********************************\n");
