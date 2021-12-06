@@ -24,3 +24,6 @@ alias npi2-connect='ssh pi@$NPI2'
 alias npi3-connect='ssh pi@$NPI3'
 alias npi4-connect='ssh pi@$NPI4'
 ```
+```bash
+$ source ~/.bashrc
+```
