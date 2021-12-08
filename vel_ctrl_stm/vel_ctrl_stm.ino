@@ -9,6 +9,7 @@ Motor* b;
 long pos=0;
 long inter_val=0;
 long unsigned int prev_time;
+int cnt;
 
 void updateEncoderL(){    
     int MSB = digitalRead(l->motor_encA);
@@ -142,9 +143,9 @@ void setup() {
   ros_pot.begin(2000000);
   pinMode(PC13, OUTPUT);
   
-  l = new Motor(LMOTOR_P, LMOTOR_N, LMOTOR_M, LMOTOR_ENCA, LMOTOR_ENCB, 10, 0, 0);
-  r = new Motor(RMOTOR_P, RMOTOR_N, RMOTOR_M, RMOTOR_ENCA, RMOTOR_ENCB, 10, 0, 0);
-  b = new Motor(BMOTOR_P, BMOTOR_N, BMOTOR_M, BMOTOR_ENCA, BMOTOR_ENCB, 10, 0, 0);
+  l = new Motor(LMOTOR_P, LMOTOR_N, LMOTOR_M, LMOTOR_ENCA, LMOTOR_ENCB, 1, 0, 0);
+  r = new Motor(RMOTOR_P, RMOTOR_N, RMOTOR_M, RMOTOR_ENCA, RMOTOR_ENCB, 1, 0, 0);
+  b = new Motor(BMOTOR_P, BMOTOR_N, BMOTOR_M, BMOTOR_ENCA, BMOTOR_ENCB, 1, 0, 0);
   
   pinMode(l->motor_encA, INPUT);
   pinMode(l->motor_encB, INPUT);
@@ -171,7 +172,7 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(r->motor_encA), updateEncoderR, CHANGE);
   attachInterrupt(digitalPinToInterrupt(r->motor_encB), updateEncoderR, CHANGE);
   prev_time = micros();
-  
+  cnt = 0;
 }
 
 void loop() {
@@ -200,8 +201,11 @@ void loop() {
   r->control();
   b->control();
 
-
-  writeState(l->read(), b->read(), r->read(), l->curr_vel, b->curr_vel, r->curr_vel);
+  cnt++;
+  if (cnt == 10){ // Rate/10
+    writeState(l->read(), b->read(), r->read(), l->curr_vel, b->curr_vel, r->curr_vel);
+    cnt = 0;
+  }
   //delay(10); // 100 hz
   long unsigned int dt = (micros() - prev_time);
   delayMicroseconds(max(((long unsigned int)666 - dt), (long unsigned int)0)); // 1.5KHz  = 1000000/1500 = 666.66

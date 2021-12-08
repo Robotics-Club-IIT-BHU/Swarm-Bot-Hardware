@@ -14,8 +14,8 @@
 #define LMOTOR_P PB3
 #define LMOTOR_N PB4
 #define LMOTOR_M PB5
-#define RMOTOR_P PB6
-#define RMOTOR_N PB7
+#define RMOTOR_P PB7
+#define RMOTOR_N PB6
 #define RMOTOR_M PB8
 #define BMOTOR_P PB2
 #define BMOTOR_N PB1
