@@ -134,7 +134,7 @@ void inp_parse(int res){
         //printf("%c",buf[i]);
 	if(buf[i]==0)break;
         if(buf[i]=='|'){
-            std::cout<<inter<<"\n";
+            //std::cout<<inter<<"\n";
             if(inter!=""){
                 switch(inter[0]){
                     case 'l':
