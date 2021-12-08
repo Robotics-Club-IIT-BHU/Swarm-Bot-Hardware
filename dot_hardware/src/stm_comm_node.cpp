@@ -174,27 +174,30 @@ void inp_parse(int res){
 void lf_wheel_callback(const std_msgs::Float64& msg){
     double value = msg.data;
     //std::cout<<value<<"\n";
-    char msg_data[10];
+    char msg_data[16];
     sprintf(msg_data, "lf:%.3f|",value);
+    int n = strlen(msg_data);
     //printf("%s",msg_data);
-    write(fd, msg_data, 10);
+    write(fd, msg_data, n);
     //usleep(8*100);
 }
 
 void rt_wheel_callback(const std_msgs::Float64& msg){
     double value = msg.data;
-    char msg_data[10];
+    char msg_data[16];
     sprintf(msg_data, "rt:%.3f|",value);
+    int n = strlen(msg_data);
     //printf("%s",msg_data);
-    write(fd, msg_data, 10);
+    write(fd, msg_data, n);
     //usleep(8*100);
 }
 
 void bk_wheel_callback(const std_msgs::Float64& msg){
     double value = msg.data;
-    char msg_data[10];
+    char msg_data[16];
     sprintf(msg_data, "bk:%.3f|",value);
+    int n = strlen(msg_data);
     //printf("%s",msg_data);
-    write(fd, msg_data, 10);
+    write(fd, msg_data, n);
     //usleep(8*100);
 }
