@@ -85,13 +85,13 @@ void readCMD(){
       start = true;
       dec = false;
       if(cnt==0){
-        // ros_pot.println(buf_signi/denom,3);
+        ros_pot.println(buf_signi/denom,3);
         l->setVel(buf_signi/denom);
       }else if (cnt==1){
-        // ros_pot.println(buf_signi/denom,3);
+        ros_pot.println(buf_signi/denom,3);
         b->setVel(buf_signi/denom);
       }else if (cnt==2) {
-        // ros_pot.println(buf_signi/denom,3);
+        ros_pot.println(buf_signi/denom,3);
         r->setVel(buf_signi/denom);
       }
       buf_signi = 0;
@@ -125,7 +125,7 @@ void readCMD(){
 }
 
 void writeState(double l_pos, double b_pos, double r_pos, double l_vel, double b_vel, double r_vel){
-  ros_pot.print("l_p:");
+  ros_pot.print("|l_p:");
   ros_pot.print(l_pos,3);
   ros_pot.print("|b_p:");
   ros_pot.print(b_pos,3);
@@ -203,7 +203,7 @@ void loop() {
 
   cnt++;
   if (cnt == 10){ // Rate/10
-    //writeState(l->read(), b->read(), r->read(), l->curr_vel, b->curr_vel, r->curr_vel);
+    writeState(l->read(), b->read(), r->read(), l->curr_vel, b->curr_vel, r->curr_vel);
     cnt = 0;
   }
   //delay(10); // 100 hz

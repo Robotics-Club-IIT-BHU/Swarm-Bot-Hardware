@@ -140,25 +140,29 @@ void inp_parse(int res){
                 if(n<=3) break;
                 int st = inter.find(":");
                 if (st==-1) break;
-                switch(inter[st-3]){
-                    case 'l':
-                        if(inter[st-1]=='v')
-                            jnt_st.velocity[0] = std::stod(inter.substr(st+1));
-                        else if(inter[st-1]=='p')
-                            jnt_st.position[0] = std::stod(inter.substr(st+1));
-                        break;
-                    case 'r':
-                        if(inter[st-1]=='v')
-                            jnt_st.velocity[2] = std::stod(inter.substr(st+1));
-                        else if(inter[st-1]=='p')
-                            jnt_st.position[2] = std::stod(inter.substr(st+1));
-                        break;
-                    case 'b':
-                        if(inter[st-1]=='v')
-                            jnt_st.velocity[1] = std::stod(inter.substr(st+1));
-                        else if(inter[st-1]=='p')
-                            jnt_st.position[1] = std::stod(inter.substr(st+1));
-                        break;
+                try{
+                    switch(inter[st-3]){
+                        case 'l':
+                            if(inter[st-1]=='v')
+                                jnt_st.velocity[0] = std::stod(inter.substr(st+1));
+                            else if(inter[st-1]=='p')
+                                jnt_st.position[0] = std::stod(inter.substr(st+1));
+                            break;
+                        case 'r':
+                            if(inter[st-1]=='v')
+                                jnt_st.velocity[2] = std::stod(inter.substr(st+1));
+                            else if(inter[st-1]=='p')
+                                jnt_st.position[2] = std::stod(inter.substr(st+1));
+                            break;
+                        case 'b':
+                            if(inter[st-1]=='v')
+                                jnt_st.velocity[1] = std::stod(inter.substr(st+1));
+                            else if(inter[st-1]=='p')
+                                jnt_st.position[1] = std::stod(inter.substr(st+1));
+                            break;
+                    }
+                } catch(std::invalid_argument& e){
+                    ROS_ERROR("Failed to parse STM input %s", inter);
                 }
             } else {
                 break;
