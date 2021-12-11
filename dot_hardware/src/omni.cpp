@@ -170,7 +170,7 @@ void velocity_callback(const geometry_msgs::Twist& msg){
     vx = msg.linear.x;
     vy = msg.linear.y;
     wp = msg.angular.z;
-    std::cout<<vx<<" "<<vy<<" "<<wp<<" "<<"\n";
+    // std::cout<<vx<<" "<<vy<<" "<<wp<<" "<<"\n";
 }
 
 void imu_callback(const sensor_msgs::Imu::ConstPtr& msg){
