@@ -96,11 +96,12 @@ int main(int argc, char *argv[])
     // printf("UART1 configured....\n");
 
     connected = 1;
-    //while(connected == 1){
+    while(connected == 1){
           
-    //      usleep(2500000);
-    //}
-    ros::spin();
+         usleep(2500000);
+         ros::spin();
+    }
+    
     close(fd);
     exit(0);
 }
