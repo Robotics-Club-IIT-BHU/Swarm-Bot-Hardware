@@ -52,9 +52,9 @@ int main(int argc, char *argv[])
     ros::init(argc, argv, "stm_comm");
     ros::NodeHandle n;
     jnt_state_pub_ = n.advertise<sensor_msgs::JointState>("joint_state",100);
-    l_wheel_cmd_ = n.subscribe("left_joint_velocity_controller/command", 1000, lf_wheel_callback);
-    r_wheel_cmd_ = n.subscribe("right_joint_velocity_controller/command", 1000, rt_wheel_callback);
-    b_wheel_cmd_ = n.subscribe("back_joint_velocity_controller/command", 1000, bk_wheel_callback);
+    l_wheel_cmd_ = n.subscribe("velocity_controller/left_joint_vel_controller/command", 1000, lf_wheel_callback);
+    r_wheel_cmd_ = n.subscribe("velocity_controller/right_joint_vel_controller/command", 1000, rt_wheel_callback);
+    b_wheel_cmd_ = n.subscribe("velocity_controller/back_joint_vel_controller/command", 1000, bk_wheel_callback);
 
     jnt_st.header.frame_id = "base_link";
     jnt_st.header.stamp = ros::Time::now();

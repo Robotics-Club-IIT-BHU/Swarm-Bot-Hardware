@@ -79,10 +79,10 @@ double Motor::read(long val=-INT_MAX){
 int Motor::control(){
     double val = 257*pid_obj->compute(this->curr_vel);
     if(abs(val)<257*5) return -1;
-    val += prev_inp;
-    prev_inp = val;
+//    val = prev_inp;
+//    prev_inp = val;
     //std::cout<<val<<"\n";  
-    if(abs(val)<257*20){
+    if(abs(val)<257*30){
         digitalWrite(motor_p, LOW);
         digitalWrite(motor_n, LOW);
         analogWrite(motor_e, 0);

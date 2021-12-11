@@ -78,24 +78,28 @@ void readCMD(){
   double buf_signi = 0;
   double denom = 1;
   bool dec = false;
+  bool neg = false;
   while(ros_pot.available()){
     char c = ros_pot.read();
     if(c=='|'){
       if(start)continue;
       start = true;
       dec = false;
+      double final_val = buf_signi/denom;
+      if(neg)final_val *= -1;
       if(cnt==0){
-        ros_pot.println(buf_signi/denom,3);
-        l->setVel(buf_signi/denom);
+        //sros_pot.println(buf_signi/denom,3);
+        l->setVel(final_val);
       }else if (cnt==1){
-        ros_pot.println(buf_signi/denom,3);
-        b->setVel(buf_signi/denom);
+        //ros_pot.println(buf_signi/denom,3);
+        b->setVel(final_val);
       }else if (cnt==2) {
-        ros_pot.println(buf_signi/denom,3);
-        r->setVel(buf_signi/denom);
+        //ros_pot.println(buf_signi/denom,3);
+        r->setVel(final_val);
       }
       buf_signi = 0;
       denom = 1;
+      neg = false;
     }else{
       if(start){
         start = false;
@@ -111,6 +115,8 @@ void readCMD(){
       } else {
         if(c=='.'){
           dec = true;
+        } else if(c=='-'){ 
+          neg = true;
         } else {
           if(c>'9'||c<'0')continue;
           buf_signi *=10;
@@ -143,9 +149,9 @@ void setup() {
   ros_pot.begin(2000000);
   pinMode(PC13, OUTPUT);
   
-  l = new Motor(LMOTOR_P, LMOTOR_N, LMOTOR_M, LMOTOR_ENCA, LMOTOR_ENCB, 1, 0, 0);
-  r = new Motor(RMOTOR_P, RMOTOR_N, RMOTOR_M, RMOTOR_ENCA, RMOTOR_ENCB, 1, 0, 0);
-  b = new Motor(BMOTOR_P, BMOTOR_N, BMOTOR_M, BMOTOR_ENCA, BMOTOR_ENCB, 1, 0, 0);
+  l = new Motor(LMOTOR_P, LMOTOR_N, LMOTOR_M, LMOTOR_ENCA, LMOTOR_ENCB, 20, 0.5, 0);
+  r = new Motor(RMOTOR_P, RMOTOR_N, RMOTOR_M, RMOTOR_ENCA, RMOTOR_ENCB, 20, 0.5, 0);
+  b = new Motor(BMOTOR_P, BMOTOR_N, BMOTOR_M, BMOTOR_ENCA, BMOTOR_ENCB, 20, 0.5, 0);
   
   pinMode(l->motor_encA, INPUT);
   pinMode(l->motor_encB, INPUT);
