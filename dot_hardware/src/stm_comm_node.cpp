@@ -162,7 +162,7 @@ void inp_parse(int res){
                             break;
                     }
                 } catch(std::invalid_argument& e){
-                    ROS_ERROR("Failed to parse STM input %s", inter);
+                    ROS_WARN("Failed to parse STM input %s", inter);
                 }
             } else {
                 break;
