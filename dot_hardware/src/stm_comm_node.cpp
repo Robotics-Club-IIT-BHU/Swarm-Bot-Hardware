@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
     fd = open("/dev/ttyAMA0", O_RDWR | O_NOCTTY | O_NDELAY);
     if (fd == -1)
     {
-       perror("open_port: Unable to open /dev/ttyO1\n");
+       perror("open_port: Unable to open /dev/ttyAMA0\n");
        exit(1);
     }
 
@@ -184,7 +184,7 @@ void lf_wheel_callback(const std_msgs::Float64& msg){
     int n = strlen(msg_data);
     printf("%s, %d",msg_data,n);
     write(fd, msg_data, n);
-    usleep(8*100);
+    //usleep(8*100);
 }
 
 void rt_wheel_callback(const std_msgs::Float64& msg){
@@ -194,7 +194,7 @@ void rt_wheel_callback(const std_msgs::Float64& msg){
     int n = strlen(msg_data);
     printf("%s, %d",msg_data,n);
     write(fd, msg_data, n);
-    usleep(8*100);
+    //usleep(8*100);
 }
 
 void bk_wheel_callback(const std_msgs::Float64& msg){
@@ -204,5 +204,5 @@ void bk_wheel_callback(const std_msgs::Float64& msg){
     int n = strlen(msg_data);
     printf("%s, %d",msg_data,n);
     write(fd, msg_data, n);
-    usleep(8*100);
+    //usleep(8*100);
 }
