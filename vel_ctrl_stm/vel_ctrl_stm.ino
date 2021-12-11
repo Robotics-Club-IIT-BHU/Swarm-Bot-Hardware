@@ -125,7 +125,7 @@ void readCMD(){
 }
 
 void writeState(double l_pos, double b_pos, double r_pos, double l_vel, double b_vel, double r_vel){
-  ros_pot.print("|l_p:");
+  ros_pot.print("l_p:");
   ros_pot.print(l_pos,3);
   ros_pot.print("|b_p:");
   ros_pot.print(b_pos,3);
@@ -137,7 +137,7 @@ void writeState(double l_pos, double b_pos, double r_pos, double l_vel, double b
   ros_pot.print(b_vel,3);
   ros_pot.print("|r_v:");
   ros_pot.print(r_vel,3);
-  ros_pot.print("|\n");
+  ros_pot.print("|\r\n");
 }
 void setup() {
   ros_pot.begin(2000000);
@@ -203,7 +203,7 @@ void loop() {
 
   cnt++;
   if (cnt == 10){ // Rate/10
-    writeState(l->read(), b->read(), r->read(), l->curr_vel, b->curr_vel, r->curr_vel);
+    //writeState(l->read(), b->read(), r->read(), l->curr_vel, b->curr_vel, r->curr_vel);
     cnt = 0;
   }
   //delay(10); // 100 hz

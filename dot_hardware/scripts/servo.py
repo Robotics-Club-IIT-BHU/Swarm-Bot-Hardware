@@ -88,7 +88,7 @@ def main_loop():
 # 					servo2.value = val2
 				serObj.setTarget(0,0)
 				serObj.control()
-			
+				
 			rate.sleep()
 		except rospy.ROSInterruptException:
 			rospy.logerr("Shutting Down Servo Server")

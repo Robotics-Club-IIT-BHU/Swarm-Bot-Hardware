@@ -132,28 +132,32 @@ void inp_parse(int res){
     //printf("%s",buf);
     for(;i<res;i++){
         //printf("%c",buf[i]);
-	if(buf[i]==0)break;
+	    if(buf[i]==0)break;
         if(buf[i]=='|'){
             //std::cout<<inter<<"\n";
             if(inter!=""){
-                switch(inter[0]){
+                int n = inter.length();
+                if(n<=3) break;
+                int st = inter.find(":");
+                if (st==-1) break;
+                switch(inter[st-3]){
                     case 'l':
-                        if(inter[2]=='v')
-                            jnt_st.velocity[0] = std::stod(inter.substr(4));
-                        else if(inter[2]=='p')
-                            jnt_st.position[0] = std::stod(inter.substr(4));
+                        if(inter[st-1]=='v')
+                            jnt_st.velocity[0] = std::stod(inter.substr(st+1));
+                        else if(inter[st-1]=='p')
+                            jnt_st.position[0] = std::stod(inter.substr(st+1));
                         break;
                     case 'r':
-                        if(inter[2]=='v')
-                            jnt_st.velocity[2] = std::stod(inter.substr(4));
-                        else if(inter[2]=='p')
-                            jnt_st.position[2] = std::stod(inter.substr(4));
+                        if(inter[st-1]=='v')
+                            jnt_st.velocity[2] = std::stod(inter.substr(st+1));
+                        else if(inter[st-1]=='p')
+                            jnt_st.position[2] = std::stod(inter.substr(st+1));
                         break;
                     case 'b':
-                        if(inter[2]=='v')
-                            jnt_st.velocity[1] = std::stod(inter.substr(4));
-                        else if(inter[2]=='p')
-                            jnt_st.position[1] = std::stod(inter.substr(4));
+                        if(inter[st-1]=='v')
+                            jnt_st.velocity[1] = std::stod(inter.substr(st+1));
+                        else if(inter[st-1]=='p')
+                            jnt_st.position[1] = std::stod(inter.substr(st+1));
                         break;
                 }
             } else {
@@ -175,7 +179,7 @@ void lf_wheel_callback(const std_msgs::Float64& msg){
     double value = msg.data;
     //std::cout<<value<<"\n";
     char msg_data[16];
-    sprintf(msg_data, "lf:%.3f|",value);
+    sprintf(msg_data, "l_v:%.3f|",value);
     int n = strlen(msg_data);
     //printf("%s",msg_data);
     write(fd, msg_data, n);
@@ -185,7 +189,7 @@ void lf_wheel_callback(const std_msgs::Float64& msg){
 void rt_wheel_callback(const std_msgs::Float64& msg){
     double value = msg.data;
     char msg_data[16];
-    sprintf(msg_data, "rt:%.3f|",value);
+    sprintf(msg_data, "r_v:%.3f|",value);
     int n = strlen(msg_data);
     //printf("%s",msg_data);
     write(fd, msg_data, n);
@@ -195,7 +199,7 @@ void rt_wheel_callback(const std_msgs::Float64& msg){
 void bk_wheel_callback(const std_msgs::Float64& msg){
     double value = msg.data;
     char msg_data[16];
-    sprintf(msg_data, "bk:%.3f|",value);
+    sprintf(msg_data, "b_v:%.3f|",value);
     int n = strlen(msg_data);
     //printf("%s",msg_data);
     write(fd, msg_data, n);
