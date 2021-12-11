@@ -181,7 +181,7 @@ void lf_wheel_callback(const std_msgs::Float64& msg){
     double value = msg.data;
     //std::cout<<value<<"\n";
     char msg_data[16];
-    sprintf(msg_data, "l_v:%.3f|",value);
+    sprintf(msg_data, "l_v:%.3f|\r\n",value);
     int n = strlen(msg_data);
     //printf("%s, %d",msg_data,n);
     write(fd, msg_data, n);
@@ -191,7 +191,7 @@ void lf_wheel_callback(const std_msgs::Float64& msg){
 void rt_wheel_callback(const std_msgs::Float64& msg){
     double value = msg.data;
     char msg_data[16];
-    sprintf(msg_data, "r_v:%.3f|",value);
+    sprintf(msg_data, "r_v:%.3f|\r\n",value);
     int n = strlen(msg_data);
     //printf("%s, %d",msg_data,n);
     write(fd, msg_data, n);
@@ -201,7 +201,7 @@ void rt_wheel_callback(const std_msgs::Float64& msg){
 void bk_wheel_callback(const std_msgs::Float64& msg){
     double value = msg.data;
     char msg_data[16];
-    sprintf(msg_data, "b_v:%.3f|",value);
+    sprintf(msg_data, "b_v:%.3f|\r\n",value);
     int n = strlen(msg_data);
     //printf("%s, %d",msg_data,n);
     write(fd, msg_data, n);
