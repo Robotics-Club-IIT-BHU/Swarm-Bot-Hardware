@@ -97,9 +97,9 @@ int main(int argc, char *argv[])
 
     connected = 1;
     while(connected == 1){
-          
-         usleep(2500000);
-         ros::spin();
+        ros::spin_once();  
+        usleep(2500000);
+         
     }
     
     close(fd);
@@ -183,7 +183,7 @@ void lf_wheel_callback(const std_msgs::Float64& msg){
     char msg_data[16];
     sprintf(msg_data, "l_v:%.3f|",value);
     int n = strlen(msg_data);
-    printf("%s, %d",msg_data,n);
+    //printf("%s, %d",msg_data,n);
     write(fd, msg_data, n);
     //usleep(8*100);
 }
@@ -193,7 +193,7 @@ void rt_wheel_callback(const std_msgs::Float64& msg){
     char msg_data[16];
     sprintf(msg_data, "r_v:%.3f|",value);
     int n = strlen(msg_data);
-    printf("%s, %d",msg_data,n);
+    //printf("%s, %d",msg_data,n);
     write(fd, msg_data, n);
     //usleep(8*100);
 }
@@ -203,7 +203,7 @@ void bk_wheel_callback(const std_msgs::Float64& msg){
     char msg_data[16];
     sprintf(msg_data, "b_v:%.3f|",value);
     int n = strlen(msg_data);
-    printf("%s, %d",msg_data,n);
+    //printf("%s, %d",msg_data,n);
     write(fd, msg_data, n);
     //usleep(8*100);
 }
