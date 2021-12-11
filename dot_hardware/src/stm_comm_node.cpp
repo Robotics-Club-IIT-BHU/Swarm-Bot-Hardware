@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
 
     connected = 1;
     while(connected == 1){
-        ros::spin_once();  
+        ros::spinOnce();  
         usleep(2500000);
          
     }
