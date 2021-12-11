@@ -21,10 +21,7 @@
 #include <std_msgs/Float64.h>
 #include <sensor_msgs/JointState.h>
 
-#define BUF_SIZE 64
-#define TEST_LOW_LATENCY 1 
-#define TEST_OUTPUT_FLUSH 0 
-#define TEST_SCHED 1 
+#define BUF_SIZE 256
 // 2MB
 
 ros::Publisher jnt_state_pub_;
@@ -185,7 +182,7 @@ void lf_wheel_callback(const std_msgs::Float64& msg){
     char msg_data[16];
     sprintf(msg_data, "l_v:%.3f|",value);
     int n = strlen(msg_data);
-    printf("%s",msg_data);
+    printf("%s, %d",msg_data,n);
     write(fd, msg_data, n);
     usleep(8*100);
 }
@@ -195,7 +192,7 @@ void rt_wheel_callback(const std_msgs::Float64& msg){
     char msg_data[16];
     sprintf(msg_data, "r_v:%.3f|",value);
     int n = strlen(msg_data);
-    printf("%s",msg_data);
+    printf("%s, %d",msg_data,n);
     write(fd, msg_data, n);
     usleep(8*100);
 }
@@ -205,7 +202,7 @@ void bk_wheel_callback(const std_msgs::Float64& msg){
     char msg_data[16];
     sprintf(msg_data, "b_v:%.3f|",value);
     int n = strlen(msg_data);
-    printf("%s",msg_data);
+    printf("%s, %d",msg_data,n);
     write(fd, msg_data, n);
     usleep(8*100);
 }
