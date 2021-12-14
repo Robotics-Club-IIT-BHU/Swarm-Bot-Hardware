@@ -185,10 +185,7 @@ void lf_wheel_callback(const std_msgs::Float64& msg){
     sprintf(msg_data, "l_v:%.3f|\r\n",value);
     int n = strlen(msg_data);
     //printf("%s, %d",msg_data,n);
-    int res = write(fd, msg_data, n);
-    if(res<0){
-        ROS_WARN("Lvel cmd %d",res);
-    }
+    write(fd, msg_data, n);
     //usleep(8*100);
 }
 
@@ -198,10 +195,8 @@ void rt_wheel_callback(const std_msgs::Float64& msg){
     sprintf(msg_data, "r_v:%.3f|\r\n",value);
     int n = strlen(msg_data);
     //printf("%s, %d",msg_data,n);
-    int res = write(fd, msg_data, n);
-    if(res<0){
-        ROS_WARN("Lvel cmd %d",res);
-    }    //usleep(8*100);
+    write(fd, msg_data, n);
+    //usleep(8*100);
 }
 
 void bk_wheel_callback(const std_msgs::Float64& msg){
@@ -210,8 +205,6 @@ void bk_wheel_callback(const std_msgs::Float64& msg){
     sprintf(msg_data, "b_v:%.3f|\r\n",value);
     int n = strlen(msg_data);
     //printf("%s, %d",msg_data,n);
-    int res = write(fd, msg_data, n);
-    if(res<0){
-        ROS_WARN("Lvel cmd %d",res);
-    }    //usleep(8*100);
+    write(fd, msg_data, n);
+    //usleep(8*100);
 }
