@@ -97,11 +97,12 @@ int main(int argc, char *argv[])
 
     connected = 1;
     while(ros::ok()){
+
         ros::spinOnce();  
         usleep(2500000);
          
     }
-    
+    printf("exiting stm-connect");
     close(fd);
     exit(0);
 }
@@ -184,7 +185,7 @@ void lf_wheel_callback(const std_msgs::Float64& msg){
     sprintf(msg_data, "l_v:%.3f|\r\n",value);
     int n = strlen(msg_data);
     //printf("%s, %d",msg_data,n);
-    write(fd+1, msg_data, n);
+    write(fd, msg_data, n);
     //usleep(8*100);
 }
 
@@ -194,7 +195,7 @@ void rt_wheel_callback(const std_msgs::Float64& msg){
     sprintf(msg_data, "r_v:%.3f|\r\n",value);
     int n = strlen(msg_data);
     //printf("%s, %d",msg_data,n);
-    write(fd+1, msg_data, n);
+    write(fd, msg_data, n);
     //usleep(8*100);
 }
 
@@ -204,6 +205,6 @@ void bk_wheel_callback(const std_msgs::Float64& msg){
     sprintf(msg_data, "b_v:%.3f|\r\n",value);
     int n = strlen(msg_data);
     //printf("%s, %d",msg_data,n);
-    write(fd+1, msg_data, n);
+    write(fd, msg_data, n);
     //usleep(8*100);
 }
