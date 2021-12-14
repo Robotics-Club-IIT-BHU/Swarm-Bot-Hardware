@@ -215,7 +215,7 @@ int main(int argc, char** argv){
     // div = new OmniDriver(&n);
 
     cmd_vel_sub = n.subscribe("cmd_vel", 1000, velocity_callback);
-    jnt_sub = n.subscribe("joint_states", 1000, jnt_state_callback);
+    jnt_sub = n.subscribe("joint_state", 1000, jnt_state_callback);
     imu_sub = n.subscribe("imu/data", 100, imu_callback); // use the one with madwigk filter not this
     pub_ = n.advertise<nav_msgs::Odometry>("odom", 50) ;
     l_pub_ = n.advertise<std_msgs::Float64>("velocity_controller/left_joint_vel_controller/command", 10);

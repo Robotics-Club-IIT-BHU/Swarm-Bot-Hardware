@@ -6,8 +6,8 @@
 
 #define LMOTOR_ENCA PA0
 #define LMOTOR_ENCB PA1
-#define RMOTOR_ENCA PA2
-#define RMOTOR_ENCB PA3
+#define RMOTOR_ENCA PA3
+#define RMOTOR_ENCB PA2
 #define BMOTOR_ENCA PA4
 #define BMOTOR_ENCB PA5
 
@@ -17,8 +17,8 @@
 #define RMOTOR_P PB7
 #define RMOTOR_N PB6
 #define RMOTOR_M PB8
-#define BMOTOR_P PB2
-#define BMOTOR_N PB1
+#define BMOTOR_P PB1
+#define BMOTOR_N PB2
 #define BMOTOR_M PB0
 
 
