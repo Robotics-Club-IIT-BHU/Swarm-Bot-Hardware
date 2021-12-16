@@ -105,8 +105,8 @@ void updateAndOdom(Wheel wheel){
     x     = ((1.73 * v_right0) - (1.73 * v_left0)) / 3.0;
     // theta = (v_left0 + v_back0 + v_right0) / (3*0.04);
 
-    double X = cos(odom_.theta)*x - sin(odom_.theta)*y;
-    double Y = sin(odom_.theta)*x + cos(odom_.theta)*y;
+    double X = cos(odom_.theta)*x + sin(odom_.theta)*y;
+    double Y = -sin(odom_.theta)*x + cos(odom_.theta)*y;
 
     // duration = (timeCurrent - timePrevious).toSec();
     odom_.vx = X;
