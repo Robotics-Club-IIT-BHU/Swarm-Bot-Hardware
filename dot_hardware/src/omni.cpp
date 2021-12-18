@@ -97,12 +97,12 @@ void updateAndOdom(Wheel wheel){
 
     timePrevious = timeCurrent;
 
-    long double v_left0  = v_left  * R;
-    long double v_back0  = v_back  * R;
-    long double v_right0 = v_right * R;
+    long double v_left0  = -v_left  * R;
+    long double v_back0  = -v_back  * R;
+    long double v_right0 = -v_right * R;
     double x,y,theta;
-    y     = ((2.0 * v_back0) - v_left0 - v_right0) / 3.0;
-    x     = ((1.73 * v_right0) - (1.73 * v_left0)) / 3.0;
+    x     = ((2.0 * v_back0) - v_left0 - v_right0) / 3.0;
+    y     = ((1.73 * v_right0) - (1.73 * v_left0)) / 3.0;
     // theta = (v_left0 + v_back0 + v_right0) / (3*0.04);
 
     double X = cos(odom_.theta)*x - sin(odom_.theta)*y;
