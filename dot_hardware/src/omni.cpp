@@ -232,9 +232,9 @@ int main(int argc, char** argv){
         double wmp = wp ; // Body frame
         
         double v1, v2, v3;
-        v1 = (L * wmp - (vmx / 2) - (sqrt3by2 * vmy));
-        v2 = (vmx + L * wmp);
-        v3 = (L * wmp - (vmx / 2) + (sqrt3by2 * vmy));
+        v1 = - (L * wmp - (vmx / 2) - (sqrt3by2 * vmy));
+        v2 = - (vmx + L * wmp);
+        v3 = - (L * wmp - (vmx / 2) + (sqrt3by2 * vmy));
 
         //v1=v2=v3=1;
         // wheel_.lpos = wheel_.lpos + div->l_w_dir*wheel_speed*v1*dt_/R;
