@@ -62,7 +62,7 @@ struct Odom{
     double theta;
     double vx;
     double vy;
-    double wx;
+    double wz;
 } odom_;
 
 void updateAndOdom(Wheel wheel);
@@ -111,9 +111,10 @@ void updateAndOdom(Wheel wheel){
     // duration = (timeCurrent - timePrevious).toSec();
     odom_.vx = X;
     odom_.vy = Y;
+    odom_.wz = theta;
     odom_.x += X * duration;
     odom_.y += Y * duration;
-    // odom_.theta += theta * duration;
+    odom_.theta += theta * duration;
 
     publishOdom();
 }
@@ -162,7 +163,7 @@ void publishOdom(){
 
     odom.twist.twist.angular.x= 0 ;
     odom.twist.twist.angular.y= 0 ;
-    odom.twist.twist.angular.z= odom_.theta ;
+    odom.twist.twist.angular.z= odom_.wz ;
 
     pub_.publish(odom);
 }
@@ -181,7 +182,7 @@ void imu_callback(const sensor_msgs::Imu::ConstPtr& msg){
         msg->orientation.w);
     tf::Matrix3x3 m(q);
     m.getRPY(p_.rol, p_.pit, p_.yaw);
-    odom_.wx = msg->angular_velocity.z;
+    odom_.wz = msg->angular_velocity.z;
 
     if(imu_flag){
         imu_flag=false;
@@ -216,7 +217,7 @@ int main(int argc, char** argv){
 
     cmd_vel_sub = n.subscribe("cmd_vel", 1000, velocity_callback);
     jnt_sub = n.subscribe("joint_state", 1000, jnt_state_callback);
-    imu_sub = n.subscribe("imu/data", 100, imu_callback); // use the one with madwigk filter not this
+    //imu_sub = n.subscribe("imu/data", 100, imu_callback); // use the one with madwigk filter not this
     pub_ = n.advertise<nav_msgs::Odometry>("odom", 50) ;
     l_pub_ = n.advertise<std_msgs::Float64>("velocity_controller/left_joint_vel_controller/command", 10);
     r_pub_ = n.advertise<std_msgs::Float64>("velocity_controller/right_joint_vel_controller/command", 10);
@@ -226,8 +227,8 @@ int main(int argc, char** argv){
     while(ros::ok()){
        
         
-        double vmx= vx;
-        double vmy= vy;
+        double vmx= vy;
+        double vmy= vx;
         double wmp = wp ; // Body frame
         
         double v1, v2, v3;
