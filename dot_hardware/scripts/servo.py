@@ -11,8 +11,8 @@ serObj = None
 
 	
 def coor2ang(x, y):
-	x = min(max(x, 2), 2)
-	y = min(max(y, 2), 2)
+	x = min(max(x, -2), 2)
+	y = min(max(y, -2), 2)
 	ang1 = math.sin(x)
 	ang2 = math.sin(y)
 	return ang1, ang2
