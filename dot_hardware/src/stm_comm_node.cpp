@@ -44,7 +44,7 @@ struct ttas_lock {
         break;
       }
       while (lock_.load(std::memory_order_relaxed)) {
-        __builtin_ia32_pause();
+        _mm_pause();
       }
     }
   }
