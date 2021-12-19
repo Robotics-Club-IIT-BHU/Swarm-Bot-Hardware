@@ -69,6 +69,19 @@ int main(int argc, char *argv[])
 {
     ros::init(argc, argv, "stm_comm");
     ros::NodeHandle n;
+    jnt_state_pub_ = n.advertise<sensor_msgs::JointState>("joint_state",100);
+
+    jnt_st.header.frame_id = "base_link";
+    jnt_st.header.stamp = ros::Time::now();
+    jnt_st.name = std::vector<std::string>(3,"none");
+    jnt_st.name[0] = "left_joint";
+    jnt_st.name[2] = "right_joint";
+    jnt_st.name[1] = "back_joint";
+
+    jnt_st.position = std::vector<double> (3,0);
+    jnt_st.velocity = std::vector<double> (3,0);
+    jnt_st.effort = std::vector<double> (3,0);
+
     fd = open("/dev/ttyAMA0", O_RDWR | O_NOCTTY | O_NDELAY);
     if (fd == -1)
     {
@@ -102,22 +115,10 @@ int main(int argc, char *argv[])
     usleep(10000);
     connected = 1;
 
-    jnt_state_pub_ = n.advertise<sensor_msgs::JointState>("joint_state",100);
     l_wheel_cmd_ = n.subscribe("velocity_controller/left_joint_vel_controller/command", 1000, lf_wheel_callback);
     r_wheel_cmd_ = n.subscribe("velocity_controller/right_joint_vel_controller/command", 1000, rt_wheel_callback);
     b_wheel_cmd_ = n.subscribe("velocity_controller/back_joint_vel_controller/command", 1000, bk_wheel_callback);
     stm_reset_sub_ = n.subscribe("stm_comm/reset", 1, stm_reset);
-
-    jnt_st.header.frame_id = "base_link";
-    jnt_st.header.stamp = ros::Time::now();
-    jnt_st.name = std::vector<std::string>(3,"none");
-    jnt_st.name[0] = "left_joint";
-    jnt_st.name[2] = "right_joint";
-    jnt_st.name[1] = "back_joint";
-
-    jnt_st.position = std::vector<double> (3,0);
-    jnt_st.velocity = std::vector<double> (3,0);
-    jnt_st.effort = std::vector<double> (3,0);
 
     while(ros::ok()){
 
