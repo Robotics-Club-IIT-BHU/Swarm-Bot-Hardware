@@ -5,6 +5,7 @@
 */
 #include <stdio.h>
 #include <iostream>
+#include <atomic>
 #include <stdlib.h>
 #include <string>
 #include <unistd.h>
@@ -20,6 +21,7 @@
 #include <ros/ros.h>
 #include <std_msgs/Float64.h>
 #include <sensor_msgs/JointState.h>
+#include <std_msgs/Empty.h>
 
 #define BUF_SIZE 256
 // 2MB
@@ -28,13 +30,32 @@ ros::Publisher jnt_state_pub_;
 ros::Subscriber l_wheel_cmd_;
 ros::Subscriber r_wheel_cmd_;
 ros::Subscriber b_wheel_cmd_;
+ros::Subscriber stm_reset_sub_;
 sensor_msgs::JointState jnt_st;
+
+struct ttas_lock {
+  std::atomic<bool> lock_ = {false};
+
+  void unlock() {lock_.store(false);}
+
+  void lock() {
+    for (;;) {
+      if (!lock_.exchange(true, std::memory_order_acquire)) {
+        break;
+      }
+      while (lock_.load(std::memory_order_relaxed));
+    }
+  }
+} write_lock;
+
 
 void signal_handler_IO (int status);   /* definition of signal handler */
 void inp_parse(int res);
 void lf_wheel_callback(const std_msgs::Float64& msg);
 void rt_wheel_callback(const std_msgs::Float64& msg);
 void bk_wheel_callback(const std_msgs::Float64& msg);
+
+void stm_reset(const std_msgs::Empty& msg);
 
 int n;
 int fd;
@@ -46,24 +67,6 @@ char buf[BUF_SIZE];
 
 int main(int argc, char *argv[])
 {
-    ros::init(argc, argv, "stm_comm");
-    ros::NodeHandle n;
-    jnt_state_pub_ = n.advertise<sensor_msgs::JointState>("joint_state",100);
-    l_wheel_cmd_ = n.subscribe("velocity_controller/left_joint_vel_controller/command", 1000, lf_wheel_callback);
-    r_wheel_cmd_ = n.subscribe("velocity_controller/right_joint_vel_controller/command", 1000, rt_wheel_callback);
-    b_wheel_cmd_ = n.subscribe("velocity_controller/back_joint_vel_controller/command", 1000, bk_wheel_callback);
-
-    jnt_st.header.frame_id = "base_link";
-    jnt_st.header.stamp = ros::Time::now();
-    jnt_st.name = std::vector<std::string>(3,"none");
-    jnt_st.name[0] = "left_joint";
-    jnt_st.name[2] = "right_joint";
-    jnt_st.name[1] = "back_joint";
-
-    jnt_st.position = std::vector<double> (3,0);
-    jnt_st.velocity = std::vector<double> (3,0);
-    jnt_st.effort = std::vector<double> (3,0);
-
     fd = open("/dev/ttyAMA0", O_RDWR | O_NOCTTY | O_NDELAY);
     if (fd == -1)
     {
@@ -96,6 +99,26 @@ int main(int argc, char *argv[])
     // printf("UART1 configured....\n");
     usleep(10000);
     connected = 1;
+
+    ros::init(argc, argv, "stm_comm");
+    ros::NodeHandle n;
+    jnt_state_pub_ = n.advertise<sensor_msgs::JointState>("joint_state",100);
+    l_wheel_cmd_ = n.subscribe("velocity_controller/left_joint_vel_controller/command", 1000, lf_wheel_callback);
+    r_wheel_cmd_ = n.subscribe("velocity_controller/right_joint_vel_controller/command", 1000, rt_wheel_callback);
+    b_wheel_cmd_ = n.subscribe("velocity_controller/back_joint_vel_controller/command", 1000, bk_wheel_callback);
+    stm_reset_sub_ = n.subscribe("stm_comm/reset", 1, stm_reset);
+
+    jnt_st.header.frame_id = "base_link";
+    jnt_st.header.stamp = ros::Time::now();
+    jnt_st.name = std::vector<std::string>(3,"none");
+    jnt_st.name[0] = "left_joint";
+    jnt_st.name[2] = "right_joint";
+    jnt_st.name[1] = "back_joint";
+
+    jnt_st.position = std::vector<double> (3,0);
+    jnt_st.velocity = std::vector<double> (3,0);
+    jnt_st.effort = std::vector<double> (3,0);
+
     while(ros::ok()){
 
         ros::spinOnce();  
@@ -185,7 +208,9 @@ void lf_wheel_callback(const std_msgs::Float64& msg){
     sprintf(msg_data, "l_v:%.3f|\r\n",value);
     int n = strlen(msg_data);
     //printf("%s, %d",msg_data,n);
+    write_lock.lock();
     write(fd, msg_data, n);
+    write_lock.unlock();
     //usleep(8*100);
 }
 
@@ -195,7 +220,9 @@ void rt_wheel_callback(const std_msgs::Float64& msg){
     sprintf(msg_data, "r_v:%.3f|\r\n",value);
     int n = strlen(msg_data);
     //printf("%s, %d",msg_data,n);
+    write_lock.lock();
     write(fd, msg_data, n);
+    write_lock.unlock();
     //usleep(8*100);
 }
 
@@ -205,6 +232,16 @@ void bk_wheel_callback(const std_msgs::Float64& msg){
     sprintf(msg_data, "b_v:%.3f|\r\n",value);
     int n = strlen(msg_data);
     //printf("%s, %d",msg_data,n);
+    write_lock.lock();
     write(fd, msg_data, n);
+    write_lock.unlock();
     //usleep(8*100);
+}
+
+void stm_reset(const std_msgs::Empty& msg){
+    write_lock.lock();
+    write(fd, "|\n", 2);
+    usleep(8*25);
+    tcflush(fd, TCIOFLUSH);
+    write_lock.unlock();
 }
