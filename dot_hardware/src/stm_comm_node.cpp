@@ -67,6 +67,8 @@ char buf[BUF_SIZE];
 
 int main(int argc, char *argv[])
 {
+    ros::init(argc, argv, "stm_comm");
+    ros::NodeHandle n;
     fd = open("/dev/ttyAMA0", O_RDWR | O_NOCTTY | O_NDELAY);
     if (fd == -1)
     {
@@ -100,8 +102,6 @@ int main(int argc, char *argv[])
     usleep(10000);
     connected = 1;
 
-    ros::init(argc, argv, "stm_comm");
-    ros::NodeHandle n;
     jnt_state_pub_ = n.advertise<sensor_msgs::JointState>("joint_state",100);
     l_wheel_cmd_ = n.subscribe("velocity_controller/left_joint_vel_controller/command", 1000, lf_wheel_callback);
     r_wheel_cmd_ = n.subscribe("velocity_controller/right_joint_vel_controller/command", 1000, rt_wheel_callback);
