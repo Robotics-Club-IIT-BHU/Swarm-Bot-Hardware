@@ -43,10 +43,12 @@ struct ttas_lock {
       if (!lock_.exchange(true, std::memory_order_acquire)) {
         break;
       }
-      while (lock_.load(std::memory_order_relaxed));
+      while (lock_.load(std::memory_order_relaxed)) {
+        __builtin_ia32_pause();
+      }
     }
   }
-} write_lock;
+};
 
 
 void signal_handler_IO (int status);   /* definition of signal handler */
@@ -57,6 +59,7 @@ void bk_wheel_callback(const std_msgs::Float64& msg);
 
 void stm_reset(const std_msgs::Empty& msg);
 
+struct ttas_lock write_lock;
 int n;
 int fd;
 int connected;
@@ -121,6 +124,7 @@ int main(int argc, char *argv[])
     b_wheel_cmd_ = n.subscribe("velocity_controller/back_joint_vel_controller/command", 10, bk_wheel_callback);
     stm_reset_sub_ = n.subscribe("stm_comm/reset", 1, stm_reset);
     write_lock.unlock();
+
     while(ros::ok()){
 
         ros::spinOnce();  
