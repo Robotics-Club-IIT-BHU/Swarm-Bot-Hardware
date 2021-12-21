@@ -19,6 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
 #find_package(wiringPi REQUIRED)
 find_package(Threads REQUIRED)
 find_library(WIRINGPI_LIBRARIES NAMES wiringPi)
+find_library(pigpiod REQUIRED)
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -165,7 +166,7 @@ target_link_libraries(stm_comm_node
 )
 target_link_libraries(servo
   ${catkin_LIBRARIES}
-  ${PIGPIO_LIBRARIES}
+  ${pigpiod}
   ${CMAKE_THREAD_LIBS_INIT}
 )
 
