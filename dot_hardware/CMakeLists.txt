@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0.2)
 project(dot_hardware)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-add_compile_options(-std=c++11 -lwiringPi -pthread)
+add_compile_options(-std=c++11 -lwiringPi -pthread -lpigpio)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -141,7 +141,7 @@ include_directories(
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(omni_drive_node src/omni.cpp)
 add_executable(stm_comm_node src/stm_comm_node.cpp)
-
+add_executable(servo src/servo.cpp)
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
@@ -161,6 +161,11 @@ target_link_libraries(omni_drive_node
 target_link_libraries(stm_comm_node
   ${catkin_LIBRARIES}
   ${WIRINGPI_LIBRARIES}
+  ${CMAKE_THREAD_LIBS_INIT}
+)
+target_link_libraries(servo
+  ${catkin_LIBRARIES}
+  ${PIGPIO_LIBRARIES}
   ${CMAKE_THREAD_LIBS_INIT}
 )
 

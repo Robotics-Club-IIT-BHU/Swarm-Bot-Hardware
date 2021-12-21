@@ -8,16 +8,6 @@
 #include <math.h>
 #include <pigpio.h>
 
-/*
-# servo_demo.c
-# 2016-10-08
-# Public Domain
-
-gcc -Wall -pthread -o servo_demo servo_demo.c -lpigpio
-
-sudo ./servo_demo          # Send servo pulses to GPIO 4.
-sudo ./servo_demo 23 24 25 # Send servo pulses to GPIO 23, 24, 25.
-*/
 
 #define NUM_GPIO 32
 

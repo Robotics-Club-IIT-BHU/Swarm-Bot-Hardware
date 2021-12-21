@@ -14,7 +14,7 @@
             <param name="interrupt_gpio_pin" value="18"/>
         </node>
         <include file="$(find imu_filter_madgwick)/launch/imu_filter_madgwick.launch"/>
-        <node name="servo_control" pkg="dot_hardware" type="servo.py"/>
+        <node name="servo_control" pkg="dot_hardware" type="servo"/>
     </group>
     
 </launch>
