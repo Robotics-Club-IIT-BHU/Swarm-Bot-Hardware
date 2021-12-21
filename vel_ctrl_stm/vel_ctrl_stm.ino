@@ -168,9 +168,9 @@ void setup() {
   pinMode(r->motor_p, OUTPUT);
   pinMode(r->motor_n, OUTPUT);
   pinMode(r->motor_e, OUTPUT);
-  // digitalWrite(l->motor_p, HIGH);
-  // digitalWrite(l->motor_n, LOW);
-  // analogWrite(l->motor_e, 63350);
+//   digitalWrite(l->motor_p, HIGH);
+//   digitalWrite(l->motor_n, LOW);
+//   analogWrite(l->motor_e, 63350);
   attachInterrupt(digitalPinToInterrupt(l->motor_encA), updateEncoderL, CHANGE);
   attachInterrupt(digitalPinToInterrupt(l->motor_encB), updateEncoderL, CHANGE);
   attachInterrupt(digitalPinToInterrupt(b->motor_encA), updateEncoderB, CHANGE);
