@@ -19,7 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
 #find_package(wiringPi REQUIRED)
 find_package(Threads REQUIRED)
 find_library(WIRINGPI_LIBRARIES NAMES wiringPi)
-find_library(pigpiod pigpiod_if2 REQUIRED)
+find_library(pigpio REQUIRED)
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -125,6 +125,7 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+  ${pigpio_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
