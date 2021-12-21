@@ -14,12 +14,13 @@
 #define MIN_WIDTH 1000
 #define MAX_WIDTH 2000
 
+int run = 1;
 
 void cmd_callback(const geometry_msgs::Point& msg);
 
-void coor2ang(float& x, float& y, float* ang){
-   x = min(max(x, -1.5708), 1.5708)
-   y = min(max(y, -1.5708), 1.5708)
+void coor2ang(float x, float y, float* ang){
+   x = std::min(std::max(x, -1.5708), 1.5708)
+   y = std::min(std::max(y, -1.5708), 1.5708)
    ang[0] = sin(x)
    ang[1] = sin(y) 
 }
@@ -57,17 +58,17 @@ class ServoControlRos{
          tar[0] = val1;
          tar[1] = val2;
       }
-      void setTarget(float& x, float& y){
+      void setTarget(float x, float y){
          coor2ang(x, y, tar);
       }
 
       int servoMap(float inp){
          int cmd = (inp*((int)MAX_WIDTH-(int)MIN_WIDTH)) + (int)MIN_WIDTH;
-         return min(max((int)MIN_WIDTH, cmd), (int)MAX_WIDTH);
+         return std::min(std::max((int)MIN_WIDTH, cmd), (int)MAX_WIDTH);
       }
 
       void serControl(int cnx, float val){
-         gpioServo(g, servoMap(val));
+         gpioServo(cnx, servoMap(val));
       }
 
       void control(){
