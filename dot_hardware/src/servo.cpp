@@ -1,7 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
-
+#include <cstdlib>
+#include <unistd.h>
+#include <ros/ros.h>
+#include <geometry_msgs/Point.h>
+#include <math.h>
 #include <pigpio.h>
 
 /*
@@ -20,11 +24,15 @@ sudo ./servo_demo 23 24 25 # Send servo pulses to GPIO 23, 24, 25.
 #define MIN_WIDTH 1000
 #define MAX_WIDTH 2000
 
-int run=1;
 
-int step[NUM_GPIO];
-int width[NUM_GPIO];
-int used[NUM_GPIO];
+void cmd_callback(const geometry_msgs::Point& msg);
+
+void coor2ang(float& x, float& y, float* ang){
+   x = min(max(x, -1.5708), 1.5708)
+   y = min(max(y, -1.5708), 1.5708)
+   ang[0] = sin(x)
+   ang[1] = sin(y) 
+}
 
 int randint(int from, int to)
 {
@@ -36,72 +44,105 @@ void stop(int signum)
    run = 0;
 }
 
+class ServoControlRos{
+   public:
+      geometry_msgs::Point p;
+      int cnxs[2];
+      float d1, d2;
+      float val1, val2;
+      float m;
+      bool new_goal;
+      float tar[2];
+
+      ServoControlRos(bool pi_shift=false):d1(0.001),d2(0.001),m(0.5),new_goal(false) 
+      {
+         // GPIO
+         cnxs[0] = getenv("SERVO_X")?atoi(getenv("SERVO_X")):23;
+         cnxs[1] = getenv("SERVO_Y")?atoi(getenv("SERVO_Y")):24;
+         if(pi_shift)
+            val1 = -m;
+         else
+            val1 = 0;
+         val2 = 0;
+         tar[0] = val1;
+         tar[1] = val2;
+      }
+      void setTarget(float& x, float& y){
+         coor2ang(x, y, tar);
+      }
+
+      int servoMap(float inp){
+         int cmd = (inp*((int)MAX_WIDTH-(int)MIN_WIDTH)) + (int)MIN_WIDTH;
+         return min(max((int)MIN_WIDTH, cmd), (int)MAX_WIDTH);
+      }
+
+      void serControl(int cnx, float val){
+         gpioServo(g, servoMap(val));
+      }
+
+      void control(){
+         val1 = 0.8*val1 + 0.2*tar[0];
+         val2 = 0.8*val2 + 0.2*tar[1];
+         serControl(cnxs[0], val1);
+         serControl(cnxs[1], val2);
+      }
+      bool is_reached(){
+         if((abs(tar[0]-val1) + abs(tar[1]-val2))<0.01)
+			   return true;
+   		else
+			   return false;
+      }
+      void stop(){
+         gpioServo(cnxs[0], 0);
+         gpioServo(cnxs[1], 0);
+      }
+};
+
+ServoControlRos ser;
+ros::Subscriber ser_cmd_;
+
+void cmd_callback(const geometry_msgs::Point& msg){
+   ser.p.x = msg.x;
+   ser.p.y = msg.y;
+   double mag = sqrt(pow(ser.p.x,2) + pow(ser.p.y, 2));
+   if (mag<0.1){
+      ser.new_goal = false;
+   }else{
+      ser.new_goal = true;
+   }
+   if(mag>2.808){
+      ser.p.x /= mag;
+      ser.p.y /= mag;
+   }
+}
+
+
 int main(int argc, char *argv[])
 {
-   int i, g;
-
+   //int i, g;
+   
    if (gpioInitialise() < 0) return -1;
-
    gpioSetSignalFunc(SIGINT, stop);
+   ros::init(argc, argv, "servo_node");
+   ros::NodeHandle n("");
+   double rate = 30;
+   ser_cmd_ = n.subscribe("servo_cmd", 10, cmd_callback);
 
-   int cnxs[2] = {23, 24};
-   // if (argc == 1) used[4] = 1;
-   // else
-   // {
-   //    for (i=1; i<argc; i++)
-   //    {
-   //       g = atoi(argv[i]);
-   //       if ((g>=0) && (g<NUM_GPIO)) used[g] = 1;
-   //    }
-   // }
-   used[cnxs[0]] = 1;
-   used[cnxs[1]] = 1;
-
-   printf("Sending servos pulses to GPIO");
-
-   for (g=0; g<NUM_GPIO; g++)
-   {
-      if (used[g])
-      {
-         printf(" %d", g);
-         step[g] = randint(5, 25);
-         if ((step[g] % 2) == 0) step[g] = -step[g];
-         width[g] = randint(MIN_WIDTH, MAX_WIDTH);
-      }
-   }
-
-   printf(", control C to stop.\n");
-
-   while(run)
-   {
-      for (g=0; g<NUM_GPIO; g++)
-      {
-         if (used[g])
-         {
-            gpioServo(g, width[g]);
-
-            // printf("%d %d\n", g, width[g]);
-
-            width[g] += step[g];
-
-            if ((width[g]<MIN_WIDTH) || (width[g]>MAX_WIDTH))
-            {
-               step[g] = -step[g];
-               width[g] += step[g];
-            }
+   while(ros::ok()){
+      if(ser.new_goal){
+         ser.setTarget(ser.p.x, ser.p.y);
+         ser.control();
+         if(ser.is_reached()){
+            ser.new_goal = false;
          }
+      } else {
+         ser.setTarget(0,0);
+         ser.control();
       }
-
-      time_sleep(0.1);
+      time_sleep(1./rate);
    }
-
-   printf("\ntidying up\n");
-
-   for (g=0; g<NUM_GPIO; g++)
-   {
-      if (used[g]) gpioServo(g, 0);
-   }
-
+   ser.stop();
+ 
    gpioTerminate();
 
    return 0;
