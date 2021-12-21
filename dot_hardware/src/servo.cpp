@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 
    gpioSetSignalFunc(SIGINT, stop);
 
-   int cnxs = {23, 24};
+   int cnxs[2] = {23, 24};
    // if (argc == 1) used[4] = 1;
    // else
    // {
