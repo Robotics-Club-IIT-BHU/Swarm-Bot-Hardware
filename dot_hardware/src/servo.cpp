@@ -63,7 +63,7 @@ class ServoControlRos{
       }
 
       int servoMap(float inp){
-         int cmd = (inp*((int)MAX_WIDTH-(int)MIN_WIDTH)) + (int)MIN_WIDTH;
+         int cmd = (((inp+1)/2)*((int)MAX_WIDTH-(int)MIN_WIDTH)) + (int)MIN_WIDTH;
          return std::min(std::max((int)MIN_WIDTH, cmd), (int)MAX_WIDTH);
       }
 
