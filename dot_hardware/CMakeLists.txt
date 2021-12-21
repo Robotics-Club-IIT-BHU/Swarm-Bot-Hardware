@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0.2)
 project(dot_hardware)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-add_compile_options(-std=c++11 -lwiringPi -pthread -lpigpio)
+add_compile_options(-std=c++11 -lwiringPi -pthread)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -19,7 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
 #find_package(wiringPi REQUIRED)
 find_package(Threads REQUIRED)
 find_library(WIRINGPI_LIBRARIES NAMES wiringPi)
-find_library(pigpiod REQUIRED)
+find_library(pigpiod pigpiod_if2 REQUIRED)
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
