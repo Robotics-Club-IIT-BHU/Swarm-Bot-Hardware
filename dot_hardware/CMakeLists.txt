@@ -166,7 +166,7 @@ target_link_libraries(stm_comm_node
 )
 target_link_libraries(servo
   ${catkin_LIBRARIES}
-  ${pigpiod_LIBRARY}
+  ${pigpio_LIBRARY}
   ${CMAKE_THREAD_LIBS_INIT}
 )
 
