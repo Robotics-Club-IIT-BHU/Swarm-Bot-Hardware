@@ -19,10 +19,10 @@ int run = 1;
 void cmd_callback(const geometry_msgs::Point& msg);
 
 void coor2ang(float x, float y, float* ang){
-   x = std::min(std::max(x, (float)-1.5708), (float)1.5708)
-   y = std::min(std::max(y, (float)-1.5708), (float)1.5708)
-   ang[0] = sin(x)
-   ang[1] = sin(y) 
+   x = std::min(std::max(x, (float)-1.5708), (float)1.5708);
+   y = std::min(std::max(y, (float)-1.5708), (float)1.5708);
+   ang[0] = sin(x);
+   ang[1] = sin(y);
 }
 
 int randint(int from, int to)
