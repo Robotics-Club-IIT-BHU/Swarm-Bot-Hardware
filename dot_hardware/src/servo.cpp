@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
    gpioSetSignalFunc(SIGINT, stop);
    ros::init(argc, argv, "servo_node");
    ros::NodeHandle n;
-   double rate = 30;
+   double rate = 20;
    ser_cmd_ = n.subscribe("servo_cmd", 10, cmd_callback);
 
    while(ros::ok()){
