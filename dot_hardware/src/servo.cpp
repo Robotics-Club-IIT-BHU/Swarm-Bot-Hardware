@@ -95,7 +95,8 @@ ros::Subscriber ser_cmd_;
 void cmd_callback(const geometry_msgs::Point& msg){
    ser.p.x = msg.x;
    ser.p.y = msg.y;
-   double mag = sqrt(pow(ser.p.x,2) + pow(ser.p.y, 2));
+   double mag = 0;
+   //sqrt(pow(ser.p.x,2) + pow(ser.p.y, 2));
    ROS_INFO("%f",(float)mag);
    if (mag<0.1){
       ser.new_goal = false;
@@ -118,7 +119,7 @@ int main(int argc, char *argv[])
    if (gpioInitialise() < 0) return -1;
    gpioSetSignalFunc(SIGINT, stop);
    ros::init(argc, argv, "servo_node");
-   ros::NodeHandle n("");
+   ros::NodeHandle n;
    double rate = 30;
    ser_cmd_ = n.subscribe("servo_cmd", 10, cmd_callback);
 
