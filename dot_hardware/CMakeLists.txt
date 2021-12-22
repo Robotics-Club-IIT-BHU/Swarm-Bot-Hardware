@@ -4,6 +4,8 @@ project(dot_hardware)
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11 -lwiringPi -pthread)
 
+list (APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
+
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
@@ -110,7 +112,7 @@ find_library(pigpio REQUIRED)
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-   INCLUDE_DIRS include
+   INCLUDE_DIRS include ${pigpio_INCLUDE_DIRS}
 #  LIBRARIES dot_hard
   CATKIN_DEPENDS roscpp rospy tf
 #  DEPENDS wiringPi
@@ -167,7 +169,9 @@ target_link_libraries(stm_comm_node
 )
 target_link_libraries(servo
   ${catkin_LIBRARIES}
+  ${pigpio_LIBRARIES}
   ${pigpio_LIBRARY}
+  ${pigpio}
   ${CMAKE_THREAD_LIBS_INIT}
 )
 
