@@ -95,9 +95,8 @@ ros::Subscriber ser_cmd_;
 void cmd_callback(const geometry_msgs::Point& msg){
    ser.p.x = msg.x;
    ser.p.y = msg.y;
-   double mag = 0;
-   //sqrt(pow(ser.p.x,2) + pow(ser.p.y, 2));
-   ROS_INFO("%f",(float)mag);
+   double mag = sqrt(pow(ser.p.x,2) + pow(ser.p.y, 2));
+   //ROS_INFO("%f",(float)mag);
    if (mag<0.1){
       ser.new_goal = false;
       ser.p.x = 0;
@@ -134,7 +133,9 @@ int main(int argc, char *argv[])
          ser.setTarget(0,0);
          ser.control();
       }
+      ros::spinOnce();
       time_sleep(1./rate);
+      
       //ROS_INFO("GREAT DEBUG %d",ser.new_goal);
    }
    ser.stop();
