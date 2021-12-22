@@ -169,7 +169,6 @@ target_link_libraries(stm_comm_node
 target_link_libraries(servo
   ${catkin_LIBRARIES}
   pigpio
-  pigpio_if2
   ${CMAKE_THREAD_LIBS_INIT}
 )
 
