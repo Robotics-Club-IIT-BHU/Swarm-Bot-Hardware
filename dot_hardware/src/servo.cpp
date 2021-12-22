@@ -93,8 +93,8 @@ ServoControlRos ser;
 ros::Subscriber ser_cmd_;
 
 void cmd_callback(const geometry_msgs::Point& msg){
-   ser.p.x = msg.x;
-   ser.p.y = msg.y;
+   ser.p.x = msg->x;
+   ser.p.y = msg->y;
    double mag = sqrt(pow(ser.p.x,2) + pow(ser.p.y, 2));
    if (mag<0.1){
       ser.new_goal = false;
