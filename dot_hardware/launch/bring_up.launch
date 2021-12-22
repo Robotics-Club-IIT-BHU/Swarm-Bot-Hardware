@@ -10,10 +10,10 @@
         <!-- <rosparam command="load" file="$(find dot_hardware)/config/wheel_dir/wheel_dir.yaml"/> -->
         <node name="stm_connect" pkg="dot_hardware" type="stm_comm_node" output="screen"/>
         <node name="omni_drive" pkg="dot_hardware" type="omni_drive_node" output="screen" />
-        <node name="imu_driver_node" pkg="driver_mpu9250" type="driver_mpu9250_rpi" output="screen">
+        <!--<node name="imu_driver_node" pkg="driver_mpu9250" type="driver_mpu9250_rpi" output="screen">
             <param name="interrupt_gpio_pin" value="18"/>
         </node>
-        <include file="$(find imu_filter_madgwick)/launch/imu_filter_madgwick.launch"/>
+        <include file="$(find imu_filter_madgwick)/launch/imu_filter_madgwick.launch"/>-->
         <node name="servo_control" pkg="dot_hardware" type="servo"/>
     </group>
     

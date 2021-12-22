@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
          ser.control();
       }
       time_sleep(1./rate);
-      ROS_INFO("GREAT DEBUG");
+      ROS_INFO("GREAT DEBUG %d",ser.new_goal);
    }
    ser.stop();
  
