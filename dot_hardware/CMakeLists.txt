@@ -5,7 +5,6 @@ project(dot_hardware)
 add_compile_options(-std=c++11 -lwiringPi -pthread)
 
 list (APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
-
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
@@ -169,9 +168,8 @@ target_link_libraries(stm_comm_node
 )
 target_link_libraries(servo
   ${catkin_LIBRARIES}
-  ${pigpio_LIBRARY} 
-  ${pigpiod_if_LIBRARY} 
-  ${pigpiod_if2_LIBRARY}
+  pigpio
+  pigpio_if2
   ${CMAKE_THREAD_LIBS_INIT}
 )
 
