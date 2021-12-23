@@ -261,7 +261,7 @@ int main(int argc, char** argv){
     ros::init(argc, argv, "omnidrive");
     ros::NodeHandle n("");
     timePrevious = ros::Time::now();
-    jnt_state_pub_ = n.advertise<sensor_msgs::JointState>("joint_state",100);
+    // jnt_state_pub_ = n.advertise<sensor_msgs::JointState>("joint_state",100);
     device_name_ = getenv("ROS_DEVICE_NAME");
     jnt_st.header.frame_id = device_name_+"/base_link";
     jnt_st.header.stamp = ros::Time::now();
