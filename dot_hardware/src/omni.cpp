@@ -57,7 +57,7 @@
 ros::Time timeCurrent;
 ros::Time timePrevious;
 
-ros::Publisher jnt_state_pub_;
+// ros::Publisher jnt_state_pub_;
 ros::Publisher odom_pub_;
 ros::Subscriber cmd_vel_sub_;
 ros::Subscriber stm_reset_sub_;
@@ -131,7 +131,7 @@ struct Odom{
 void updateAndOdom(Wheel wheel);
 void publishOdom();
 
-void jnt_state_callback(const sensor_msgs::JointState &msg){
+void jnt_state_callback(sensor_msgs::JointState msg){
     double jnt_vel;
     for(int i=0;i<3;i++){
         if(msg.name[i][0]=='l'){
@@ -261,6 +261,10 @@ int main(int argc, char** argv){
     ros::init(argc, argv, "omnidrive");
     ros::NodeHandle n("");
     timePrevious = ros::Time::now();
+    cmd_vel_sub_ = n.subscribe("cmd_vel", 10, velocity_callback);
+    //imu_sub = n.subscribe("imu/data", 100, imu_callback); // use the one with madwigk filter not this
+    odom_pub_ = n.advertise<nav_msgs::Odometry>("odom", 50) ;
+    long int i = 0;
     // jnt_state_pub_ = n.advertise<sensor_msgs::JointState>("joint_state",100);
     device_name_ = getenv("ROS_DEVICE_NAME");
     jnt_st.header.frame_id = device_name_+"/base_link";
@@ -303,6 +307,7 @@ int main(int argc, char** argv){
     termAttr.c_iflag &= ~(IXON | IXOFF | IXANY);
     termAttr.c_oflag &= ~OPOST;
     tcsetattr(fd,TCSANOW,&termAttr);
+    
     // printf("UART1 configured....\n");
     usleep(10000);
     connected = 1;
@@ -320,10 +325,6 @@ int main(int argc, char** argv){
     // OmniDriver* div;
     // div = new OmniDriver(&n);
 
-    cmd_vel_sub_ = n.subscribe("cmd_vel", 1000, velocity_callback);
-    //imu_sub = n.subscribe("imu/data", 100, imu_callback); // use the one with madwigk filter not this
-    odom_pub_ = n.advertise<nav_msgs::Odometry>("odom", 50) ;
-    long int i = 0;
 
     while(ros::ok()){
        
