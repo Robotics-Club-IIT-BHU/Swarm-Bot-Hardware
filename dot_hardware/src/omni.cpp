@@ -37,7 +37,7 @@ double yaw_offset = 0;
 double vx=0;
 double vy=0;
 double wp=0;
-
+std::string device_name_;
 
 struct Wheel{
     double l_theta;
@@ -126,8 +126,8 @@ void publishOdom(){
     tf_quat.setRPY(0, 0, odom_.theta);
 
     odom_trans.header.stamp = ros::Time::now();
-    odom_trans.header.frame_id = "odom";
-    odom_trans.child_frame_id = "origin_link";
+    odom_trans.header.frame_id = device_name_+"/odom";
+    odom_trans.child_frame_id = device_name_+"/base_link";
     odom_trans.transform.translation.x =odom_.x;
     odom_trans.transform.translation.y =odom_.y;
     odom_trans.transform.translation.z =0;
@@ -144,7 +144,7 @@ void publishOdom(){
     //publish odometry over ros
     nav_msgs::Odometry odom ;
     odom.header.stamp = odom_trans.header.stamp ;
-    odom.header.frame_id = "odom" ;
+    odom.header.frame_id = device_name_+"/odom" ;
 
     //set the position
     // std::cout<<odom_trans.transform.translation.x<<" "
@@ -156,7 +156,7 @@ void publishOdom(){
     odom.pose.pose.orientation = geo_Quat ;
 
     //set the velocity
-    odom.child_frame_id = "origin_link";
+    odom.child_frame_id = device_name_+"/base_link";
     odom.twist.twist.linear.x = odom_.vx ;
     odom.twist.twist.linear.y = odom_.vy ;
     odom.twist.twist.linear.z = 0 ;
@@ -208,6 +208,7 @@ int main(int argc, char** argv){
     ros::NodeHandle n("");
     timePrevious = ros::Time::now();
     int debug = getenv("DEBUG")?atoi(getenv("DEBUG")):0;
+    device_name_ = getenv("ROS_DEVICE_NAME");
     // double wheel_speed = getenv("WSP")?atoi(getenv("WSP")):10;
     double hz=100;
     ros::Rate rate(hz);

@@ -17,6 +17,7 @@
 #include <sys/signal.h>
 #include <errno.h>
 #include <termios.h>
+include <cstdlib>
 
 #include <ros/ros.h>
 #include <std_msgs/Float64.h>
@@ -71,8 +72,8 @@ int main(int argc, char *argv[])
     ros::init(argc, argv, "stm_comm");
     ros::NodeHandle n;
     jnt_state_pub_ = n.advertise<sensor_msgs::JointState>("joint_state",100);
-
-    jnt_st.header.frame_id = "base_link";
+    std::string device_name_ = getenv("ROS_DEVICE_NAME");
+    jnt_st.header.frame_id = device_name_+"/base_link";
     jnt_st.header.stamp = ros::Time::now();
     jnt_st.name = std::vector<std::string>(3,"none");
     jnt_st.name[0] = "left_joint";
