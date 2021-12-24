@@ -7,7 +7,7 @@ else
     echo "dtoverlay=disable-bt" >> /boot/config.txt
     echo "enable_uart=1" >> /boot/config.txt
     echo "gpu_mem=16" >> /boot/config.txt
-    sudo systemctl enable pigpiod && sudo systemctl disable hciuart
+    sudo systemctl disable pigpiod && sudo systemctl disable hciuart
     echo "export ROS_DOT_SETUPED=1" >> ~/.bashrc
     echo "Reboot the raspi now"
 fi
