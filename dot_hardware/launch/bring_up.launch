@@ -14,8 +14,13 @@
             <param name="interrupt_gpio_pin" value="18"/>
         </node>
         <include file="$(find imu_filter_madgwick)/launch/imu_filter_madgwick.launch"/>-->
+<<<<<<< HEAD
         <node name="servo_clean" pkg="dot_hardware" type="servo_clean.sh"/>
 	<node name="servo_control" pkg="dot_hardware" type="servo" launch-prefix="sudo -E"/>
+=======
+        <node name="servo_clean" pkg="dot_hardware" type="servo_clean.sh" />
+        <node name="servo_control" pkg="dot_hardware" type="servo" launch-prefix="sudo -E"/>
+>>>>>>> b4e6a421bd2176165d19c88d978d00b239babc70
     </group>
     
 </launch>

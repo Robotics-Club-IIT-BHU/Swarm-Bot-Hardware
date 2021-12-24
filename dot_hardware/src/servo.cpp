@@ -39,6 +39,7 @@ class ServoControlRos{
    public:
       geometry_msgs::Point p;
       int cnxs[2];
+      int axss[2];
       float d1, d2;
       float val1, val2;
       float m;
@@ -50,6 +51,8 @@ class ServoControlRos{
          // GPIO
          cnxs[0] = getenv("SERVO_X")?atoi(getenv("SERVO_X")):23;
          cnxs[1] = getenv("SERVO_Y")?atoi(getenv("SERVO_Y")):24;
+         axss[0] = getenv("SER_X_DIR")?atoi(getenv("SERVO_X")):2;
+         axss[1] = getenv("SER_Y_DIR")?atoi(getenv("SERVO_X")):2;
          if(pi_shift)
             val1 = -m;
          else
@@ -74,8 +77,8 @@ class ServoControlRos{
       void control(){
          val1 = 0.8*val1 + 0.2*tar[0];
          val2 = 0.8*val2 + 0.2*tar[1];
-         serControl(cnxs[0], val1);
-         serControl(cnxs[1], val2);
+         serControl(cnxs[0], (axss[0]-1)*val1);
+         serControl(cnxs[1], (axss[1]-1)*val2);
       }
       bool is_reached(){
          if((abs(tar[0]-val1) + abs(tar[1]-val2))<0.01)
