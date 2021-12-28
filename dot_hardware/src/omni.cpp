@@ -116,7 +116,7 @@ void updateAndOdom(Wheel wheel){
     odom_.y += Y * duration;
     odom_.theta += theta * duration;
 
-    publishOdom();
+    //publishOdom();
 }
 void publishOdom(){
     static tf::TransformBroadcaster br;
@@ -210,7 +210,7 @@ int main(int argc, char** argv){
     int debug = getenv("DEBUG")?atoi(getenv("DEBUG")):0;
     device_name_ = getenv("ROS_DEVICE_NAME");
     // double wheel_speed = getenv("WSP")?atoi(getenv("WSP")):10;
-    double hz=100;
+    double hz=50;
     ros::Rate rate(hz);
     double dt_ = 1.0/hz;
     // OmniDriver* div;

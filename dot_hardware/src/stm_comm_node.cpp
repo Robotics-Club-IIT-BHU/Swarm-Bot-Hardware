@@ -118,9 +118,9 @@ int main(int argc, char *argv[])
     connected = 1;
 
     write_lock.lock();
-    l_wheel_cmd_ = n.subscribe("velocity_controller/left_joint_vel_controller/command", 10, lf_wheel_callback);
-    r_wheel_cmd_ = n.subscribe("velocity_controller/right_joint_vel_controller/command", 10, rt_wheel_callback);
-    b_wheel_cmd_ = n.subscribe("velocity_controller/back_joint_vel_controller/command", 10, bk_wheel_callback);
+    l_wheel_cmd_ = n.subscribe("velocity_controller/left_joint_vel_controller/command", 1000, lf_wheel_callback);
+    r_wheel_cmd_ = n.subscribe("velocity_controller/right_joint_vel_controller/command", 1000, rt_wheel_callback);
+    b_wheel_cmd_ = n.subscribe("velocity_controller/back_joint_vel_controller/command", 1000, bk_wheel_callback);
     stm_reset_sub_ = n.subscribe("stm_comm/reset", 1, stm_reset);
     write_lock.unlock();
 

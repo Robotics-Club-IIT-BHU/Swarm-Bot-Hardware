@@ -51,8 +51,8 @@ class ServoControlRos{
          // GPIO
          cnxs[0] = getenv("SERVO_X")?atoi(getenv("SERVO_X")):23;
          cnxs[1] = getenv("SERVO_Y")?atoi(getenv("SERVO_Y")):24;
-         axss[0] = getenv("SER_X_DIR")?atoi(getenv("SERVO_X")):2;
-         axss[1] = getenv("SER_Y_DIR")?atoi(getenv("SERVO_X")):2;
+         axss[0] = getenv("SER_X_DIR")?atoi(getenv("SER_X_DIR")):2;
+         axss[1] = getenv("SER_Y_DIR")?atoi(getenv("SER_Y_DIR")):2;
          if(pi_shift)
             val1 = -m;
          else
