@@ -80,8 +80,8 @@ class ServoControlRos{
       }
 
       void control(){
-         val1 = 0.5*val1 + 0.5*tar[0];
-         val2 = 0.5*val2 + 0.5*tar[1];
+         val1 = 0.7*val1 + 0.3*tar[0];
+         val2 = 0.7*val2 + 0.3*tar[1];
          serControl(cnxs[0], (axss[0]-1)*(val1+offs[0]) );
          serControl(cnxs[1], (axss[1]-1)*(val2+offs[1]) );
       }

@@ -29,7 +29,7 @@
 ros::Time timeCurrent;
 ros::Time timePrevious;
 ros::Publisher pub_;
-ros::Subscriber imu_sub, cmd_vel_sub, jnt_sub;
+ros::Subscriber imu_sub, cmd_vel_sub, ang_vel_sub, jnt_sub;
 ros::Publisher l_pub_, r_pub_, b_pub_;
 
 bool imu_flag=true;
@@ -170,8 +170,11 @@ void publishOdom(){
 void velocity_callback(const geometry_msgs::Twist& msg){
     vx = msg.linear.x;
     vy = msg.linear.y;
-    wp = msg.angular.z;
+    // wp = msg.angular.z;
     // std::cout<<vx<<" "<<vy<<" "<<wp<<" "<<"\n";
+}
+void angular_callback(const geometry_msgs::Twist& msg){
+    wp = msg.angular.z;
 }
 
 void imu_callback(const sensor_msgs::Imu::ConstPtr& msg){
@@ -217,6 +220,7 @@ int main(int argc, char** argv){
     // div = new OmniDriver(&n);
 
     cmd_vel_sub = n.subscribe("cmd_vel", 1000, velocity_callback);
+    ang_vel_sub = n.subscribe("ang_vel", 1000, angular_callback);
     jnt_sub = n.subscribe("joint_state", 1000, jnt_state_callback);
     //imu_sub = n.subscribe("imu/data", 100, imu_callback); // use the one with madwigk filter not this
     pub_ = n.advertise<nav_msgs::Odometry>("odom", 50) ;
@@ -225,9 +229,7 @@ int main(int argc, char** argv){
     b_pub_ = n.advertise<std_msgs::Float64>("velocity_controller/back_joint_vel_controller/command", 10);
     long int i = 0;
 
-    while(ros::ok()){
-       
-        
+    while(ros::ok()){ 
         double vmx= vx;
         double vmy= vy;
         double wmp = wp ; // Body frame
