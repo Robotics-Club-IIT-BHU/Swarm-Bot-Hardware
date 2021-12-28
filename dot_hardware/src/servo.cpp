@@ -54,9 +54,10 @@ class ServoControlRos{
          cnxs[1] = getenv("SERVO_Y")?atoi(getenv("SERVO_Y")):24;
          axss[0] = getenv("SER_X_DIR")?atoi(getenv("SER_X_DIR")):2;
          axss[1] = getenv("SER_Y_DIR")?atoi(getenv("SER_Y_DIR")):2;
-	 offs[0] = getenv("SER_X_OFF")?atof(getenv("SER_X_OFF")):0.0;
-	 offs[0] = getenv("SER_Y_OFF")?atof(getenv("SER_Y_OFF")):0.0;
-         if(pi_shift)
+	 offs[0] = getenv("SER_X_OFF")?(float)atoi(getenv("SER_X_OFF"))/100:0;
+	 offs[1] = getenv("SER_Y_OFF")?(float)atoi(getenv("SER_Y_OFF"))/100:0;
+         ROS_INFO("offsets %f, %f", offs[0], offs[1]); 
+	if(pi_shift)
             val1 = -m;
          else
             val1 = 0;
