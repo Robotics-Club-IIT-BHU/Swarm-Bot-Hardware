@@ -38,8 +38,8 @@ class ServoControlRos:
 	def setTarget(self,x,y):
 		self.tar1, self.tar2 = coor2ang(x, y)
 	def control(self):
-		self.val1 = 0.8*self.val1 + 0.2*self.tar1
-		self.val2 = 0.8*self.val2 + 0.2*self.tar2
+		self.val1 = 0.2*self.val1 + 0.8*self.tar1
+		self.val2 = 0.2*self.val2 + 0.8*self.tar2
 		self.servo1.value = self.val1
 		self.servo2.value = self.val2
 	def is_reached(self):

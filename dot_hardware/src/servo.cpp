@@ -16,11 +16,13 @@
 
 int run = 1;
 
+float offs[2];
+
 void cmd_callback(const geometry_msgs::Point& msg);
 
 void coor2ang(float x, float y, float* ang){
-   x = std::min(std::max(x, (float)-1.5708), (float)1.5708);
-   y = std::min(std::max(y, (float)-1.5708), (float)1.5708);
+   x = std::min(std::max(x+offs[0], (float)-1.5708), (float)1.5708);
+   y = std::min(std::max(y+offs[1], (float)-1.5708), (float)1.5708);
    ang[0] = sin(x);
    ang[1] = sin(y);
 }
@@ -40,6 +42,7 @@ class ServoControlRos{
       geometry_msgs::Point p;
       int cnxs[2];
       int axss[2];
+      //float offs[2];
       float d1, d2;
       float val1, val2;
       float m;
@@ -51,9 +54,13 @@ class ServoControlRos{
          // GPIO
          cnxs[0] = getenv("SERVO_X")?atoi(getenv("SERVO_X")):23;
          cnxs[1] = getenv("SERVO_Y")?atoi(getenv("SERVO_Y")):24;
-         axss[0] = getenv("SER_X_DIR")?atoi(getenv("SERVO_X")):2;
-         axss[1] = getenv("SER_Y_DIR")?atoi(getenv("SERVO_X")):2;
+         axss[0] = getenv("SER_X_DIR")?atoi(getenv("SER_X_DIR")):2;
+         axss[1] = getenv("SER_Y_DIR")?atoi(getenv("SER_Y_DIR")):2; 
+	 offs[0] = getenv("SER_X_OFF")?(float)atoi(getenv("SER_X_OFF"))/100:0;
+	 offs[1] = getenv("SER_Y_OFF")?(float)atoi(getenv("SER_Y_OFF"))/100:0;
+         ROS_INFO("offsets %f, %f", offs[0], offs[1]); 
          if(pi_shift)
+
             val1 = -m;
          else
             val1 = 0;
@@ -75,10 +82,10 @@ class ServoControlRos{
       }
 
       void control(){
-         val1 = 0.8*val1 + 0.2*tar[0];
-         val2 = 0.8*val2 + 0.2*tar[1];
-         serControl(cnxs[0], (axss[0]-1)*val1);
-         serControl(cnxs[1], (axss[1]-1)*val2);
+         val1 = 0.65*val1 + 0.35*tar[0];
+         val2 = 0.65*val2 + 0.35*tar[1];
+         serControl(cnxs[0], (axss[0]-1)*(val1) );
+         serControl(cnxs[1], (axss[1]-1)*(val2) );
       }
       bool is_reached(){
          if((abs(tar[0]-val1) + abs(tar[1]-val2))<0.01)

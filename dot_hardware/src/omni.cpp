@@ -94,6 +94,7 @@ int connected;
 struct termios termAttr;
 struct sigaction saio;
 char buf[BUF_SIZE];
+bool start_omni = false;
 
 bool imu_flag=true;
 double yaw_offset = 0;
@@ -145,6 +146,7 @@ void jnt_state_callback(sensor_msgs::JointState msg){
             wheel_.b_theta = msg.position[i];
         }
     }
+    start_omni = true;
     updateAndOdom(wheel_);
     
 }
@@ -179,7 +181,7 @@ void updateAndOdom(Wheel wheel){
     odom_.y += Y * duration;
     odom_.theta += theta * duration;
 
-    publishOdom();
+    //publishOdom();
 }
 void publishOdom(){
     static tf::TransformBroadcaster br;
@@ -233,8 +235,11 @@ void publishOdom(){
 void velocity_callback(const geometry_msgs::Twist& msg){
     vx = msg.linear.x;
     vy = msg.linear.y;
-    wp = msg.angular.z;
+    // wp = msg.angular.z;
     // std::cout<<vx<<" "<<vy<<" "<<wp<<" "<<"\n";
+}
+void angular_callback(const geometry_msgs::Twist& msg){
+    wp = msg.angular.z;
 }
 
 void imu_callback(const sensor_msgs::Imu::ConstPtr& msg){
@@ -316,19 +321,21 @@ int main(int argc, char** argv){
     stm_reset_sub_ = n.subscribe("stm_comm/reset", 1, stm_reset);
     write_lock.unlock();
 
-
+    ros::spinOnce();
     int debug = getenv("DEBUG")?atoi(getenv("DEBUG")):0;
     // double wheel_speed = getenv("WSP")?atoi(getenv("WSP")):10;
-    double hz=100;
+    double hz=50;
     ros::Rate rate(hz);
     double dt_ = 1.0/hz;
     // OmniDriver* div;
     // div = new OmniDriver(&n);
 
+    while(start_omni==false){
+        ros::spinOnce();
+        rate.sleep();
+    }
 
-    while(ros::ok()){
-       
-        
+    while(ros::ok()){ 
         double vmx= vx;
         double vmy= vy;
         double wmp = wp ; // Body frame
@@ -350,7 +357,7 @@ int main(int argc, char** argv){
         wheel_vel.data = v3;
         rt_wheel_callback(wheel_vel);
 
-        publishOdom();
+        //publishOdom();
 
         ros::spinOnce();
         rate.sleep();
