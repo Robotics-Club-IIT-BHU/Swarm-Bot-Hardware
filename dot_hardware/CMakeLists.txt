@@ -142,8 +142,9 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
+add_executable(omni_cum_stm src/omni_cum_stm.cpp)
 add_executable(omni_drive_node src/omni.cpp)
-# add_executable(stm_comm_node src/stm_comm_node.cpp)
+add_executable(stm_comm_node src/stm_comm_node.cpp)
 add_executable(servo src/servo.cpp)
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -156,16 +157,22 @@ add_executable(servo src/servo.cpp)
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
+
+target_link_libraries(omni_cum_stm
+  ${catkin_LIBRARIES}
+  ${WIRINGPI_LIBRARIES}
+  ${CMAKE_THREAD_LIBS_INIT}
+)
 target_link_libraries(omni_drive_node
   ${catkin_LIBRARIES}
   ${WIRINGPI_LIBRARIES}
   ${CMAKE_THREAD_LIBS_INIT}
 )
-# target_link_libraries(stm_comm_node
-#   ${catkin_LIBRARIES}
-#   ${WIRINGPI_LIBRARIES}
-#   ${CMAKE_THREAD_LIBS_INIT}
-# )
+target_link_libraries(stm_comm_node
+  ${catkin_LIBRARIES}
+  ${WIRINGPI_LIBRARIES}
+  ${CMAKE_THREAD_LIBS_INIT}
+)
 target_link_libraries(servo
   ${catkin_LIBRARIES}
   pigpio
