@@ -361,7 +361,7 @@ int main(int argc, char** argv){
 
         //publishOdom();
         ros::Duration d = ros::Time::now() - prev;
-        ROS_INFO("loop rate %f",1./d.toSec())
+        ROS_INFO("loop rate %f",1./d.toSec());
         prev = ros::Time::now();
         ros::spinOnce();
         rate.sleep();
