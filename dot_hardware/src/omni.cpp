@@ -336,6 +336,7 @@ int main(int argc, char** argv){
         rate.sleep();
     }
     ROS_INFO("into the main code");
+    ros::Time prev = ros::Time::now();
     while(ros::ok()){ 
         double vmx= vx;
         double vmy= vy;
@@ -359,7 +360,9 @@ int main(int argc, char** argv){
         rt_wheel_callback(wheel_vel);
 
         //publishOdom();
-
+        ros::Duration d = ros::Time::now() - prev;
+        ROS_INFO("loop rate %f",1./d.toSec())
+        prev = ros::Time::now();
         ros::spinOnce();
         rate.sleep();
         
