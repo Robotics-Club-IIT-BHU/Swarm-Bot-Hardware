@@ -329,12 +329,13 @@ int main(int argc, char** argv){
     double dt_ = 1.0/hz;
     // OmniDriver* div;
     // div = new OmniDriver(&n);
-
+    ROS_INFO("waiting for stm sync");
     while(start_omni==false){
+        
         ros::spinOnce();
         rate.sleep();
     }
-
+    ROS_INFO("into the main code");
     while(ros::ok()){ 
         double vmx= vx;
         double vmy= vy;
