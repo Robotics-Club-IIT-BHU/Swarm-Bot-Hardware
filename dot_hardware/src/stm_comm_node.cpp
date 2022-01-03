@@ -202,6 +202,7 @@ void inp_parse(int res){
     //std::cout<<inter<<"\n";
     if(result==-1) // Validate the string
         return;
+    jnt_st.header.stamp = ros::Time::now();
 
     jnt_state_pub_.publish(jnt_st);
 }
